@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1CFF31BC-191C-4A1F-B53A-30ED609A7ED0}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>MasonProtector</RootNamespace>
+    <AssemblyName>MasonProtector</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>mason.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="dnlib, Version=4.5.0.0, Culture=neutral, PublicKeyToken=50e96378b6e77999, processorArchitecture=MSIL">
+      <HintPath>..\packages\dnlib.4.5.0\lib\net45\dnlib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <EmbeddedResource Include="..\packages\dnlib.4.5.0\lib\net45\dnlib.dll">
+      <Link>dnlib.dll</Link>
+      <LogicalName>MasonProtector.Embedded.dnlib.dll</LogicalName>
+    </EmbeddedResource>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\Engine\ProtectionSettings.cs" />
+    <Compile Include="Core\Obfuscation.cs" />
+    <Compile Include="Core\PolyEngine.cs" />
+    <Compile Include="Core\PreAnalysis.cs" />
+    <Compile Include="Core\Protections\Encryption\StringEncryption.cs" />
+    <Compile Include="Core\Protections\Encryption\IntEncoding.cs" />
+    <Compile Include="Core\Protections\Encryption\MutationEncoding.cs" />
+    <Compile Include="Core\Protections\Encryption\RuntimeEncryption.cs" />
+    <Compile Include="Core\Protections\Encryption\ConstantsEncoding.cs" />
+    <Compile Include="Core\Protections\Encryption\MethodBodyEncryption.cs" />
+    <Compile Include="Core\Protections\Encryption\FieldEncryption.cs" />
+    <Compile Include="Core\Protections\Encryption\CrossReferenceEncryption.cs" />
+    <Compile Include="Core\Protections\Encryption\PolymorphicEncryption.cs" />
+    <Compile Include="Core\Protections\Encryption\StringComposition.cs" />
+    <Compile Include="Core\Protections\Encryption\DelegateEncryption.cs" />
+    <Compile Include="Core\Protections\Encryption\ArrayEncryption.cs" />
+    <Compile Include="Core\Protections\Encryption\BodyVaultRuntime.cs" />
+    <Compile Include="Core\Protections\Encryption\TypeCloner.cs" />
+    <Compile Include="Core\Protections\Encryption\BodyVault.cs" />
+    <Compile Include="Core\Protections\Encryption\ConstStringStripper.cs" />
+    <Compile Include="Core\Protections\Encryption\LibraryMerging.cs" />
+    <Compile Include="Core\Protections\Encryption\ResourceVaultRuntime.cs" />
+    <Compile Include="Core\Protections\Encryption\ResourceVault.cs" />
+    <Compile Include="Core\Protections\Encryption\MaximumEncryptionAmplifier.cs" />
+    <Compile Include="Core\Protections\Encryption\MaxEncRelocator.cs" />
+    <Compile Include="Core\Protections\Encryption\CodeExportToDll.cs" />
+    <Compile Include="Core\Protections\Encryption\CodeEncryption.cs" />
+    <Compile Include="Core\Protections\Obfuscation\ControlFlow.cs" />
+    <Compile Include="Core\Protections\Obfuscation\ProxyCalls.cs" />
+    <Compile Include="Core\Protections\Obfuscation\Dynamic.cs" />
+    <Compile Include="Core\Protections\Obfuscation\VMObfuscation.cs" />
+    <Compile Include="Core\Protections\Obfuscation\CalliConversion.cs" />
+    <Compile Include="Core\Protections\Obfuscation\Local2Field.cs" />
+    <Compile Include="Core\Protections\Obfuscation\OpaquePredicate.cs" />
+    <Compile Include="Core\Protections\Obfuscation\ReferenceProxy.cs" />
+    <Compile Include="Core\Protections\Obfuscation\CallHiding.cs" />
+    <Compile Include="Core\Protections\Obfuscation\StackUnderflow.cs" />
+    <Compile Include="Core\Protections\Obfuscation\MethodScattering.cs" />
+    <Compile Include="Core\Protections\Obfuscation\ControlFlowFlattening2.cs" />
+    <Compile Include="Core\Protections\Obfuscation\NumericObfuscation.cs" />
+    <Compile Include="Core\Protections\Obfuscation\BranchConfusion.cs" />
+    <Compile Include="Core\Protections\Obfuscation\CodeVirtualization.cs" />
+    <Compile Include="Core\Protections\Obfuscation\MethodInliner.cs" />
+    <Compile Include="Core\Protections\Obfuscation\EntryWrapper.cs" />
+    <Compile Include="Core\Protections\Obfuscation\MutationIndirection.cs" />
+    <Compile Include="Core\Protections\Stealth\WinFormsDesignerPoison.cs" />
+    <Compile Include="Core\Protections\Anti\AntiCrack.cs" />
+    <Compile Include="Core\Protections\Anti\AntiCrackRuntime.cs" />
+    <Compile Include="Core\Protections\Stealth\DesignerHider.cs" />
+    <Compile Include="Core\Protections\Stealth\DesignerSplit.cs" />
+    <Compile Include="Core\Protections\Stealth\CctorScrambler.cs" />
+    <Compile Include="Core\Protections\Stealth\EntryPointMover.cs" />
+    <Compile Include="Core\Protections\Stealth\DnSpyCrasher.cs" />
+    <Compile Include="Core\Protections\Stealth\DecompilerPoison.cs" />
+    <Compile Include="Core\Protections\Anti\AntiHook.cs" />
+    <Compile Include="Core\Protections\Anti\NativeShroud.cs" />
+    <Compile Include="Core\Protections\Anti\AntiHttp.cs" />
+    <Compile Include="Core\Protections\Anti\AntiDebug.cs" />
+    <Compile Include="Core\Protections\Anti\AntiVM.cs" />
+    <Compile Include="Core\Protections\Anti\AntiDump.cs" />
+    <Compile Include="Core\Protections\Anti\AntiTamper.cs" />
+    <Compile Include="Core\Protections\Anti\AntiDe4dot.cs" />
+    <Compile Include="Core\Protections\Anti\ScatterAntiDebug.cs" />
+    <Compile Include="Core\Protections\Anti\AntiILDasm.cs" />
+    <Compile Include="Core\Protections\Anti\AntiMemoryDump.cs" />
+    <Compile Include="Core\Protections\Stealth\TokenConfusion.cs" />
+    <Compile Include="Core\Protections\Stealth\Renamer.cs" />
+    <Compile Include="Core\Protections\Stealth\HideMethods.cs" />
+    <Compile Include="Core\Protections\Stealth\FakeAttributes.cs" />
+    <Compile Include="Core\Protections\Stealth\Watermark.cs" />
+    <Compile Include="Core\Protections\Stealth\JunkCode.cs" />
+    <Compile Include="Core\Protections\Stealth\MetadataConfusion.cs" />
+    <Compile Include="Core\Protections\Stealth\InvalidMetadata.cs" />
+    <Compile Include="Core\Protections\Stealth\TypeScrambler.cs" />
+    <Compile Include="Core\Protections\Stealth\DecoyInjector.cs" />
+    <Compile Include="Core\Protections\Stealth\PolymorphicNoise.cs" />
+    <Compile Include="Core\Theme.cs" />
+    <Compile Include="Core\Logo.cs" />
+    <Compile Include="Core\HtmlView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Core\AppBridge.cs" />
+    <Compile Include="Builder.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Resources\AppPage.html" />
+    <EmbeddedResource Include="Resources\freemasonry.txt" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="mason.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

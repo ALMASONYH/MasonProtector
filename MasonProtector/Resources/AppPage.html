@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Mason Protector</title>
+<style>
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 13px;
+  color: #EEEEF8;
+  background: {{BG}};
+  overflow: hidden;
+  -ms-user-select: none;
+
+  scrollbar-base-color:      #14121E;
+  scrollbar-face-color:      #2A2440;
+  scrollbar-track-color:     #1A1726;
+  scrollbar-arrow-color:     #A09CB2;
+  scrollbar-3dlight-color:   #2A2440;
+  scrollbar-darkshadow-color:#14121E;
+  scrollbar-highlight-color: #2A2440;
+  scrollbar-shadow-color:    #14121E;
+}
+body {
+  background-image:
+    radial-gradient(circle at 88% 92%, rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.08) 0%, transparent 55%),
+    linear-gradient(180deg, {{BG}} 0%, #0E0B16 100%);
+}
+
+.icon { display: inline-block; vertical-align: middle; }
+.icon-14 { width: 14px; height: 14px; }
+.icon-16 { width: 16px; height: 16px; }
+.icon-18 { width: 18px; height: 18px; }
+.icon-20 { width: 20px; height: 20px; }
+.icon-24 { width: 24px; height: 24px; }
+
+.titlebar {
+  height: 38px;
+  background: rgba(0,0,0,0.20);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-left: 14px;
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+}
+.titlebar-logo { width: 22px; height: 22px; margin-right: 10px; display: inline-block; vertical-align: middle; }
+.titlebar-text { font-size: 13px; letter-spacing: 0.4px; }
+.titlebar-text b   { color: #EEEEF8; font-weight: 700; }
+.titlebar-text .sep { color: #6F6B82; margin: 0 6px; }
+.titlebar-text .sub { color: #A09CB2; font-size: 11px; letter-spacing: 2px; }
+.titlebar-controls { margin-left: auto; display: -ms-flexbox; display: flex; height: 100%; }
+.titlebar-controls .ctl {
+  width: 46px; height: 100%;
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: center; justify-content: center;
+  color: #A09CB2; cursor: pointer;
+  -webkit-transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s;
+}
+.titlebar-controls .ctl:hover { background: rgba(255,255,255,0.06); color: white; }
+.titlebar-controls .ctl.close:hover { background: #DC4660; color: white; }
+
+.app-body { position: absolute; top: 38px; left: 0; right: 0; bottom: 0; }
+.layout   { display: -ms-flexbox; display: flex; height: 100%; }
+
+.sidebar {
+  width: 240px;
+  -ms-flex: 0 0 240px; flex: 0 0 240px;
+  background: rgba(0,0,0,0.22);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: -ms-flexbox; display: flex;
+  -ms-flex-direction: column; flex-direction: column;
+}
+.sidebar-brand {
+  padding: 26px 18px 20px;
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background:
+    radial-gradient(ellipse at center, rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.10) 0%, transparent 70%);
+}
+.sidebar-brand img { width: 38px; height: 38px; margin-right: 11px; }
+.sidebar-brand .name b {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: {{ACCENT}};
+  display: block;
+  text-shadow:
+    0 0 14px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.65),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+}
+.sidebar-brand .name span {
+  font-size: 11px;
+  color: #C0BCD0;
+  letter-spacing: 5px;
+  font-weight: 700;
+  display: block;
+  margin-top: 4px;
+}
+
+.sidebar-search { padding: 10px 14px 12px; position: relative; }
+.sidebar-search .ico-search {
+  position: absolute; left: 24px; top: 17px;
+  color: #6F6B82; pointer-events: none;
+}
+.sidebar-search input {
+  width: 100%;
+  padding: 7px 10px 7px 32px;
+  border-radius: 7px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  color: #EEEEF8;
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+}
+.sidebar-search input:hover, .sidebar-search input:focus {
+  border-color: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.45);
+  background-color: rgba(255,255,255,0.05);
+}
+
+.sidebar-nav  { -ms-flex: 1; flex: 1; overflow-y: auto; padding: 4px 8px; }
+.nav-item {
+  position: relative;
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  padding: 8px 12px 8px 14px;
+  margin: 1px 0;
+  border-radius: 7px;
+  color: #A09CB2;
+  font-size: 12.5px;
+  cursor: pointer;
+  -webkit-transition: background 0.12s, color 0.12s;
+  transition: background 0.12s, color 0.12s;
+}
+.nav-item:hover { background: rgba(255,255,255,0.03); color: #EEEEF8; }
+.nav-item.active {
+  background: rgba(255,255,255,0.06);
+  color: #EEEEF8;
+  font-weight: 600;
+}
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: 4px; top: 8px; bottom: 8px;
+  width: 2.5px;
+  background: {{ACCENT}};
+}
+.nav-item .ico {
+  width: 18px; height: 18px;
+  -ms-flex: 0 0 18px; flex: 0 0 18px;
+  margin-right: 11px;
+  color: #A09CB2;
+}
+.nav-item.active .ico { color: {{ACCENT}}; }
+.sidebar-footer {
+  padding: 11px 18px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 10px;
+  color: #6F6B82;
+  letter-spacing: 0.4px;
+}
+
+.content {
+  -ms-flex: 1; flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 22px 30px 28px;
+}
+.page          { display: none; }
+.page.active   { display: block; }
+.page-head     {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: end; align-items: flex-end;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.page-head .ttl {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.page-head .sub {
+  font-size: 12px;
+  color: #A09CB2;
+  margin-left: 14px;
+  padding-bottom: 3px;
+}
+
+.card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+}
+.card.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+  -ms-user-select: none;
+}
+.card.is-disabled input, .card.is-disabled button { cursor: not-allowed; }
+.card h2 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  color: #A09CB2;
+  margin-bottom: 12px;
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+}
+.card h2 .bar {
+  display: inline-block;
+  width: 14px;
+  height: 1.5px;
+  background: {{ACCENT}};
+  margin-right: 10px;
+}
+
+.card-head {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: justify; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.card-head h2 { margin-bottom: 0; }
+.tab-select-all {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+}
+.tab-select-all .lbl {
+  font-size: 10.5px;
+  color: #A09CB2;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-right: 9px;
+}
+.tab-select-all .toggle { margin-left: 0; }
+
+.options {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-wrap: wrap; flex-wrap: wrap;
+  margin: -4px;
+}
+.opt-cell {
+  width: 50%;
+  padding: 4px;
+  box-sizing: border-box;
+}
+.opt {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  padding: 10px 12px;
+  height: 52px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  -webkit-transition: background 0.12s, border-color 0.12s;
+  transition: background 0.12s, border-color 0.12s;
+}
+.opt + .opt {
+  margin-top: 8px;
+}
+.opt:hover {
+  background: rgba(255,255,255,0.045);
+  border-color: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.30);
+}
+.opt .icobox {
+  width: 30px; height: 30px;
+  -ms-flex: 0 0 30px; flex: 0 0 30px;
+  margin-right: 11px;
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: center; justify-content: center;
+  border-radius: 7px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  color: #B4B0C6;
+}
+.opt .icobox svg { width: 16px; height: 16px; }
+.opt .meta { -ms-flex: 1; flex: 1; min-width: 0; overflow: hidden; }
+.opt .ttl  {
+  font-size: 12.5px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.opt .desc {
+  font-size: 10.5px; color: #8A8699;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 42px; height: 22px;
+  -ms-flex: 0 0 42px; flex: 0 0 42px;
+  margin-left: 10px;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle .slider {
+  position: absolute; cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #14121E;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,0.50),
+    inset 0 -1px 0 rgba(255,255,255,0.03);
+  -webkit-transition: background 0.20s ease, border-color 0.20s ease, box-shadow 0.20s ease;
+  transition: background 0.20s ease, border-color 0.20s ease, box-shadow 0.20s ease;
+}
+.toggle .slider::before {
+  content: "";
+  position: absolute;
+  left: 2px; top: 2px;
+  width: 16px; height: 16px;
+  background: linear-gradient(180deg, #FAFAFC 0%, #D4D2DC 100%);
+  border-radius: 50%;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.45),
+    inset 0 -1px 0 rgba(0,0,0,0.10);
+  -webkit-transition: -webkit-transform 0.20s cubic-bezier(0.5, 0, 0.3, 1.2);
+  transition: transform 0.20s cubic-bezier(0.5, 0, 0.3, 1.2);
+}
+.toggle:hover .slider { border-color: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.40); }
+.toggle input:checked + .slider {
+  background: linear-gradient(135deg, {{ACCENT}} 0%, {{ACCENT_DARK}} 100%);
+  border-color: {{ACCENT}};
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,0.25),
+    0 0 0 2px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.14),
+    0 3px 8px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.30);
+}
+.toggle input:checked + .slider::before {
+  -ms-transform: translateX(20px);
+  -webkit-transform: translateX(20px);
+  transform: translateX(20px);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F0EEF6 100%);
+}
+
+.opt-cell input:checked ~ * .icobox,
+.opt input:checked ~ .icobox,
+.opt:has(input:checked) .icobox {  }
+
+.field { margin-top: 10px; }
+.field label {
+  display: block;
+  font-size: 10px;
+  color: #8A8699;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 5px;
+}
+.field input[type="text"], .field input[type="number"] {
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: 7px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #EEEEF8;
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+}
+.field input:hover, .field input:focus {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.45);
+}
+.row {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: end; align-items: flex-end;
+  margin: 0 -5px;
+}
+.row .field { -ms-flex: 1; flex: 1; margin-left: 5px; margin-right: 5px; min-width: 0; }
+
+.row .field.num-field { -ms-flex: 0 0 auto; flex: 0 0 auto; }
+
+.num-spin {
+  display: -ms-inline-flexbox; display: inline-flex;
+  -ms-flex-align: stretch; align-items: stretch;
+
+  width: auto;
+  min-width: 105px;
+  max-width: 130px;
+
+  border-radius: 7px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.num-spin:hover, .num-spin.focus {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.45);
+}
+
+.num-spin input[type="text"] {
+  -ms-flex: 1; flex: 1;
+  width: 42px;
+  padding: 9px 4px;
+
+  background: rgba(0, 0, 0, 0.20) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: #EEEEF8;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: center;
+  outline: none;
+  min-width: 0;
+}
+.num-spin input[type="text"]:hover,
+.num-spin input[type="text"]:focus {
+  background: rgba(0, 0, 0, 0.28) !important;
+}
+.num-spin .num-btn {
+  width: 28px;
+  border: none;
+  background: rgba(255,255,255,0.04);
+  color: #CFCAE0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  -webkit-user-select: none; -ms-user-select: none; user-select: none;
+  -webkit-appearance: none; -moz-appearance: none; appearance: none;
+  transition: background 120ms ease, color 120ms ease;
+  -ms-flex: 0 0 28px; flex: 0 0 28px;
+}
+.num-spin .num-btn:hover {
+  background: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.25);
+  color: #FFFFFF;
+}
+.num-spin .num-btn:active {
+  background: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.4);
+}
+.num-spin .num-btn.dec { border-right: 1px solid rgba(255,255,255,0.06); }
+.num-spin .num-btn.inc { border-left:  1px solid rgba(255,255,255,0.06); }
+
+.btn {
+  display: -ms-inline-flexbox; display: inline-flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: center; justify-content: center;
+  padding: 10px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+  -webkit-transition: background 0.14s ease, box-shadow 0.14s ease;
+  transition: background 0.14s ease, box-shadow 0.14s ease;
+}
+.btn svg { margin-right: 8px; }
+.btn-primary {
+  background: linear-gradient(135deg, {{ACCENT}}, {{ACCENT_DARK}});
+  box-shadow: 0 4px 14px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.30);
+}
+.btn-primary:hover { box-shadow: 0 8px 22px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.45); }
+.btn-primary.large {
+  padding: 16px 28px;
+  font-size: 14px;
+  letter-spacing: 1.8px;
+  width: 100%;
+}
+.btn-secondary {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.40);
+}
+
+.btn-maxenc {
+  background: linear-gradient(135deg, #d8243b 0%, #8b0a1b 100%);
+  border: 1px solid rgba(255, 60, 80, 0.55);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  padding: 16px 28px;
+  font-size: 14px;
+  width: 100%;
+  margin-top: 14px;
+  box-shadow: 0 4px 16px rgba(216, 36, 59, 0.30);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.40);
+}
+.btn-maxenc:hover {
+  background: linear-gradient(135deg, #ee2c44 0%, #a01122 100%);
+  box-shadow: 0 8px 26px rgba(238, 44, 68, 0.55);
+}
+.bar-danger {
+  background: linear-gradient(180deg, #ff3a4e 0%, #8b0a1b 100%) !important;
+}
+.maxenc-card {
+  border-color: rgba(216, 36, 59, 0.35) !important;
+  background: linear-gradient(180deg, rgba(35, 12, 18, 0.30) 0%, rgba(18, 16, 22, 0.50) 100%) !important;
+}
+.maxenc-card h2 {
+  color: #ff8a99 !important;
+}
+.maxenc-opt .ttl.maxenc-ttl {
+  color: #ff8a99;
+  font-weight: 700;
+}
+.icobox-danger {
+  background: rgba(216, 36, 59, 0.20) !important;
+  border-color: rgba(216, 36, 59, 0.40) !important;
+  color: #ff8a99 !important;
+}
+
+.bar-stealth {
+  background: linear-gradient(180deg, #5e7a8a 0%, #2a3942 100%) !important;
+}
+.hideenc-card {
+  border-color: rgba(120, 140, 160, 0.30) !important;
+  background: linear-gradient(180deg, rgba(20, 28, 34, 0.30) 0%, rgba(18, 16, 22, 0.50) 100%) !important;
+}
+.hideenc-card h2 {
+  color: #9bb4c4 !important;
+}
+.hideenc-ttl {
+  color: #9bb4c4;
+  font-weight: 700;
+}
+.icobox-stealth {
+  background: rgba(80, 110, 130, 0.20) !important;
+  border-color: rgba(120, 140, 160, 0.40) !important;
+  color: #9bb4c4 !important;
+}
+
+.hero {
+  position: relative;
+  background:
+
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='84' height='96' viewBox='0 0 84 96'><g fill='none' stroke='%23ffffff' stroke-opacity='0.05' stroke-width='1'><polygon points='42,4 78,24 78,68 42,88 6,68 6,24'/></g></svg>"),
+    linear-gradient(135deg, rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.10), rgba(60, 28, 140, 0.04));
+  border: 1px solid rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.20);
+  border-radius: 14px;
+  padding: 22px 26px;
+  margin-bottom: 14px;
+}
+.hero .ttl {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+.hero .ttl .mark { color: {{ACCENT}}; font-weight: 800; }
+.hero .sub {
+  color: #A09CB2;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.file-row { display: -ms-flexbox; display: flex; }
+.file-path {
+  -ms-flex: 1; flex: 1;
+  padding: 11px 13px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  font-size: 12px;
+  color: #EEEEF8;
+  margin-right: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-path.empty { color: #8A8699; font-style: italic; }
+
+.manual-toolbar { display: -ms-flexbox; display: flex; -ms-flex-align: center; align-items: center; gap: 8px; margin-bottom: 12px; -ms-flex-wrap: wrap; flex-wrap: wrap; }
+.manual-toolbar > * { margin-right: 8px; }
+.manual-toolbar input { padding: 8px 11px; border-radius: 6px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color:#EEE; font: 12px Segoe UI; min-width: 180px; }
+.manual-msg { color: #8A8699; font-style: italic; padding: 14px; text-align: center; }
+.manual-tree { max-height: calc(100vh - 280px); overflow-y: auto; padding: 4px; }
+.m-row { display: -ms-flexbox; display: flex; -ms-flex-align: center; align-items: center; padding: 5px 6px; border-radius: 4px; cursor: default; }
+.m-row:hover { background: rgba(255,255,255,0.04); }
+.m-row.is-ns  { font-weight: 600; color: #EEEEF8; }
+.m-row.is-type{ font-weight: 500; color: #D6D2E5; padding-left: 28px; }
+.m-row.is-meth{                  color: #A8A4B8; padding-left: 52px; font-size: 11.5px; }
+.m-toggle { display: inline-block; width: 14px; margin-right: 6px; color: #8A8699; -webkit-user-select:none; -ms-user-select:none; user-select:none; cursor: pointer; text-align: center; font-size: 9px; }
+.m-toggle.is-leaf { color: transparent; cursor: default; }
+.m-label { -ms-flex: 1; flex: 1; margin-left: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-children.collapsed { display: none; }
+.m-hidden { display: none; }
+
+.m-check { position: relative; display: inline-block; width: 16px; height: 16px; -ms-flex: 0 0 16px; flex: 0 0 16px; }
+.m-check input { position: absolute; left: 0; top: 0; width: 16px; height: 16px; margin: 0; opacity: 0; cursor: pointer; z-index: 2; }
+.m-cbox {
+  position: absolute; left: 0; top: 0;
+  width: 16px; height: 16px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.03);
+  border: 1.5px solid rgba(255,255,255,0.18);
+  box-sizing: border-box;
+  pointer-events: none;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.m-check:hover .m-cbox { border-color: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.55); }
+.m-check input:checked + .m-cbox {
+  background: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 1);
+  border-color: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 1);
+}
+
+.m-cbox::after {
+  content: '\2713';
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  text-align: center;
+  line-height: 13px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+  opacity: 0;
+  transition: opacity 100ms ease;
+}
+.m-check input:checked + .m-cbox::after { opacity: 1; }
+.m-check input:focus + .m-cbox { box-shadow: 0 0 0 2px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.35); }
+
+.prog-shell {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.04);
+  overflow: hidden;
+}
+.prog-fill {
+  width: 0%; height: 100%;
+  background: linear-gradient(90deg, {{ACCENT}}, {{ACCENT_DARK}});
+  -webkit-transition: width 0.25s ease;
+  transition: width 0.25s ease;
+}
+.status { margin-top: 9px; font-size: 11.5px; color: #A09CB2; }
+
+.lib-list {
+  max-height: 280px;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.025);
+  margin-top: 10px;
+}
+.lib-row {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 12px;
+  cursor: pointer;
+}
+.lib-row:last-child { border-bottom: 0; }
+.lib-row:hover { background: rgba(255,255,255,0.025); }
+
+.lib-check {
+  width: 16px; height: 16px;
+  -ms-flex: 0 0 16px; flex: 0 0 16px;
+  border-radius: 4px;
+  border: 1.5px solid rgba(255,255,255,0.20);
+  background: rgba(0,0,0,0.30);
+  margin-right: 11px;
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: center; justify-content: center;
+  -webkit-transition: background 0.12s, border-color 0.12s;
+  transition: background 0.12s, border-color 0.12s;
+}
+.lib-check svg { width: 10px; height: 10px; display: none; color: white; }
+.lib-row.checked .lib-check {
+  background: linear-gradient(135deg, {{ACCENT}}, {{ACCENT_DARK}});
+  border-color: {{ACCENT}};
+}
+.lib-row.checked .lib-check svg { display: block; }
+.lib-row .lib-name { -ms-flex: 1; flex: 1; }
+
+.preset-row {
+  display: -ms-flexbox; display: flex;
+  margin: 8px -5px 0;
+}
+.preset {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.06);
+  margin: 0 5px;
+  -webkit-transition: -webkit-transform 0.15s, border-color 0.15s;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.preset:hover { -ms-transform: scale(1.08); -webkit-transform: scale(1.08); transform: scale(1.08); border-color: rgba(255,255,255,0.40); }
+.swatch {
+  width: 110px; height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, {{ACCENT}}, {{ACCENT_DARK}});
+  margin-right: 10px;
+  -ms-flex: 0 0 110px; flex: 0 0 110px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.settings-row {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-wrap: wrap; flex-wrap: wrap;
+}
+.settings-row .btn { margin-right: 8px; }
+
+.pick-btn {
+  height: 36px;
+  padding: 0 14px 0 8px;
+  border-radius: 8px;
+  background: linear-gradient(135deg,
+    rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.18),
+    rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.08));
+  border: 1px solid rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.45);
+  -webkit-box-shadow: 0 3px 10px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.14),
+              inset 0 1px 0 rgba(255,255,255,0.04);
+          box-shadow: 0 3px 10px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.14),
+              inset 0 1px 0 rgba(255,255,255,0.04);
+  color: #EEEEF8;
+  letter-spacing: 0.4px;
+  -webkit-transition: background 0.18s ease, border-color 0.18s ease,
+                      box-shadow 0.18s ease, -webkit-transform 0.12s ease;
+          transition: background 0.18s ease, border-color 0.18s ease,
+                      box-shadow 0.18s ease, transform 0.12s ease;
+}
+.pick-btn:hover {
+  background: linear-gradient(135deg,
+    rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.28),
+    rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.14));
+  border-color: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.70);
+  -webkit-box-shadow: 0 6px 14px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.24),
+              inset 0 1px 0 rgba(255,255,255,0.06);
+          box-shadow: 0 6px 14px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.24),
+              inset 0 1px 0 rgba(255,255,255,0.06);
+  -ms-transform: translateY(-1px);
+  -webkit-transform: translateY(-1px);
+          transform: translateY(-1px);
+}
+.pick-btn:active {
+  -ms-transform: translateY(0);
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+}
+.pick-btn .pick-btn-dot {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  margin-right: 7px;
+  background: linear-gradient(135deg, {{ACCENT}}, {{ACCENT_DARK}});
+  -webkit-box-shadow: 0 0 0 1.5px rgba(255,255,255,0.08),
+              0 0 8px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.45);
+          box-shadow: 0 0 0 1.5px rgba(255,255,255,0.08),
+              0 0 8px rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.45);
+}
+.pick-btn svg { margin-right: 6px; opacity: 0.85; }
+.pick-btn-label {
+  font-weight: 700;
+  font-size: 12px;
+}
+.reset-btn { height: 36px; border-radius: 8px; padding: 0 14px; font-size: 12px; }
+
+.about-body {
+  font-size: 12px; line-height: 1.65;
+  color: #C0BCD0;
+  margin-bottom: 14px;
+}
+.about-title { color: #EEEEF8; }
+.about-links {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-wrap: wrap; flex-wrap: wrap;
+  margin-top: 4px;
+}
+.social-link {
+  display: -ms-inline-flexbox; display: inline-flex;
+  -ms-flex-align: center; align-items: center;
+  padding: 10px 14px;
+  margin: 0 8px 8px 0;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #DDDAEA;
+  text-decoration: none;
+  cursor: pointer;
+  min-width: 220px;
+  -webkit-transition: background 0.15s ease, border-color 0.15s ease,
+                      -webkit-transform 0.12s ease;
+          transition: background 0.15s ease, border-color 0.15s ease,
+                      transform 0.12s ease;
+}
+.social-link:hover {
+  background: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.10);
+  border-color: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.50);
+  -ms-transform: translateY(-1px);
+  -webkit-transform: translateY(-1px);
+          transform: translateY(-1px);
+}
+.social-icon {
+  display: -ms-inline-flexbox; display: inline-flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: center; justify-content: center;
+  width: 34px; height: 34px;
+  margin-right: 10px;
+  border-radius: 8px;
+  color: #FFFFFF;
+}
+.social-link.discord .social-icon {
+  background: linear-gradient(135deg, #5865F2, #404EED);
+  -webkit-box-shadow: 0 4px 12px rgba(88, 101, 242, 0.35);
+          box-shadow: 0 4px 12px rgba(88, 101, 242, 0.35);
+}
+.social-link.github .social-icon {
+  background: linear-gradient(135deg, #2B2A33, #16151B);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+.social-text {
+  display: -ms-inline-flexbox; display: inline-flex;
+  -ms-flex-direction: column; flex-direction: column;
+  -ms-flex: 1 1 auto; flex: 1 1 auto;
+  line-height: 1.25;
+}
+.social-head {
+  font-size: 13px;
+  font-weight: 700;
+  color: #EEEEF8;
+}
+.social-sub {
+  font-size: 11px;
+  color: #9D9AB0;
+  margin-top: 2px;
+}
+.social-out {
+  margin-left: 10px;
+  opacity: 0.55;
+  color: #9D9AB0;
+}
+.social-link:hover .social-out { opacity: 0.95; color: #DDDAEA; }
+
+.cp-modal {
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(8, 6, 14, 0.72);
+  z-index: 9998;
+  display: none;
+  -webkit-animation: cp-fade-in 0.15s ease;
+          animation: cp-fade-in 0.15s ease;
+}
+.cp-modal.show {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: center; justify-content: center;
+}
+@-webkit-keyframes cp-fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes cp-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.cp-dialog {
+  width: 320px;
+  background: linear-gradient(160deg, #1A1726 0%, #14111E 100%);
+  border: 1px solid rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.35);
+  border-radius: 12px;
+  -webkit-box-shadow: 0 20px 50px rgba(0,0,0,0.6),
+              0 0 0 1px rgba(255,255,255,0.03);
+          box-shadow: 0 20px 50px rgba(0,0,0,0.6),
+              0 0 0 1px rgba(255,255,255,0.03);
+  overflow: hidden;
+}
+.cp-head {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: justify; justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.cp-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: #EEEEF8;
+  text-transform: uppercase;
+}
+.cp-x {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: #9D9AB0;
+  width: 22px; height: 22px;
+  border-radius: 5px;
+  padding: 0;
+  display: -ms-inline-flexbox; display: inline-flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: center; justify-content: center;
+}
+.cp-x:hover { background: rgba(255,255,255,0.05); color: #EEEEF8; }
+.cp-body { padding: 14px; }
+.cp-sv {
+  position: relative;
+  width: 100%; height: 160px;
+  border-radius: 8px;
+  background: #ff0000;
+  cursor: crosshair;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.cp-sv-overlay-h {
+  position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+  background: -webkit-gradient(linear, left top, right top,
+              from(rgba(255,255,255,1)), to(rgba(255,255,255,0)));
+  background:         linear-gradient(to right,
+              rgba(255,255,255,1), rgba(255,255,255,0));
+  pointer-events: none;
+}
+.cp-sv-overlay-v {
+  position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+  background: -webkit-gradient(linear, left top, left bottom,
+              from(rgba(0,0,0,0)), to(rgba(0,0,0,1)));
+  background:         linear-gradient(to bottom,
+              rgba(0,0,0,0), rgba(0,0,0,1));
+  pointer-events: none;
+}
+.cp-sv-cursor {
+  position: absolute;
+  width: 12px; height: 12px;
+  margin-left: -6px; margin-top: -6px;
+  border: 2px solid #FFFFFF;
+  border-radius: 50%;
+  -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,0.55),
+              0 1px 3px rgba(0,0,0,0.5);
+          box-shadow: 0 0 0 1px rgba(0,0,0,0.55),
+              0 1px 3px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+.cp-hue {
+  position: relative;
+  margin-top: 10px;
+  height: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: -webkit-gradient(linear, left top, right top,
+              from(#ff0000), color-stop(16.66%, #ffff00),
+              color-stop(33.33%, #00ff00), color-stop(50%, #00ffff),
+              color-stop(66.66%, #0000ff), color-stop(83.33%, #ff00ff),
+              to(#ff0000));
+  background:         linear-gradient(to right,
+              #ff0000 0%, #ffff00 16.66%, #00ff00 33.33%,
+              #00ffff 50%, #0000ff 66.66%, #ff00ff 83.33%, #ff0000 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.cp-hue-cursor {
+  position: absolute;
+  top: -2px; bottom: -2px;
+  width: 6px;
+  margin-left: -3px;
+  background: #FFFFFF;
+  border-radius: 3px;
+  -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,0.55),
+              0 1px 3px rgba(0,0,0,0.5);
+          box-shadow: 0 0 0 1px rgba(0,0,0,0.55),
+              0 1px 3px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+
+.cp-row {
+  margin-top: 12px;
+
+  position: relative;
+  min-height: 64px;
+}
+.cp-preview {
+  position: absolute;
+  left: 0; top: 0;
+  width: 42px; height: 42px;
+  border-radius: 8px;
+  background: #8A5CF5;
+  border: 1px solid rgba(255,255,255,0.10);
+  -webkit-box-shadow: inset 0 0 0 1px rgba(0,0,0,0.20);
+          box-shadow: inset 0 0 0 1px rgba(0,0,0,0.20);
+}
+.cp-fields {
+
+  margin-left: 54px;
+}
+.cp-field {
+  display: block;
+  white-space: nowrap;
+  font-size: 0;
+}
+.cp-field + .cp-field-row { margin-top: 6px; }
+.cp-field label,
+.cp-field input,
+.cp-field-sm label,
+.cp-field-sm input {
+  display: inline-block;
+  vertical-align: middle;
+}
+.cp-field label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #9D9AB0;
+  width: 32px;
+  text-transform: uppercase;
+}
+.cp-field input {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #EEEEF8;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-family: Consolas, "Cascadia Mono", monospace;
+  font-size: 12px;
+  outline: 0;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.cp-field input:focus {
+  border-color: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.55);
+  background: rgba(255,255,255,0.07);
+}
+
+#cpHex { width: 200px; }
+
+.cp-field-row {
+  white-space: nowrap;
+  font-size: 0;
+}
+.cp-field-sm {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+.cp-field-sm:last-child { margin-right: 0; }
+.cp-field-sm label {
+  width: 14px;
+  font-size: 9px;
+}
+.cp-field-sm input {
+  width: 52px;
+  padding: 4px 4px;
+  font-size: 11px;
+  text-align: center;
+}
+.cp-foot {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-pack: end; justify-content: flex-end;
+  padding: 10px 14px 14px 14px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.cp-btn { margin-left: 8px; padding: 0 16px; height: 32px; font-size: 12px; }
+.cp-apply { padding: 0 14px; }
+.cp-apply .pick-btn-label { font-size: 12px; }
+
+#toasts {
+  position: fixed;
+  bottom: 18px; right: 18px;
+  z-index: 9999;
+  pointer-events: none;
+  display: -ms-flexbox; display: flex;
+  -ms-flex-direction: column; flex-direction: column;
+  -ms-flex-align: end; align-items: flex-end;
+}
+.toast {
+  pointer-events: auto;
+  min-width: 280px; max-width: 360px;
+  background: #1A1726;
+  border-left: 3px solid {{ACCENT}};
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 9px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.55);
+  -ms-transform: translateX(110%);
+  -webkit-transform: translateX(110%);
+  transform: translateX(110%);
+  -webkit-transition: -webkit-transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.32s;
+  transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.32s;
+  opacity: 0;
+}
+.toast.show {
+  -ms-transform: translateX(0);
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
+  opacity: 1;
+}
+.toast.success { border-left-color: #4ADE80; }
+.toast.error   { border-left-color: #F87171; }
+.toast .row {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  margin: 0;
+}
+.toast .ico {
+  width: 28px; height: 28px;
+  -ms-flex: 0 0 28px; flex: 0 0 28px;
+  border-radius: 7px;
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: center; justify-content: center;
+  margin-right: 11px;
+  background: rgba(255,255,255,0.05);
+  color: {{ACCENT}};
+}
+.toast.success .ico { color: #4ADE80; }
+.toast.error   .ico { color: #F87171; }
+.toast .body  { -ms-flex: 1; flex: 1; min-width: 0; }
+.toast .ttl   { font-size: 12.5px; font-weight: 700; }
+.toast .desc  { font-size: 11px; color: #A09CB2; margin-top: 2px; line-height: 1.4; }
+.toast .close {
+  width: 18px; height: 18px;
+  -ms-flex: 0 0 18px; flex: 0 0 18px;
+  cursor: pointer;
+  color: #6F6B82;
+  margin-left: 8px;
+  display: -ms-flexbox; display: flex;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: center; justify-content: center;
+}
+.toast .close:hover { color: #EEEEF8; }
+
+#loading {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9998;
+  background: rgba(10, 8, 16, 0.72);
+  display: none;
+}
+#loading.show {
+  display: -ms-flexbox; display: flex;
+  -ms-flex-direction: column; flex-direction: column;
+  -ms-flex-align: center; align-items: center;
+  -ms-flex-pack: center; justify-content: center;
+}
+.loader-hex {
+  width: 86px; height: 86px;
+  position: relative;
+}
+.loader-hex svg.body {
+  width: 86px; height: 86px;
+  fill: rgba({{ACCENT_R}}, {{ACCENT_G}}, {{ACCENT_B}}, 0.12);
+  stroke: rgba(255,255,255,0.10);
+  stroke-width: 1;
+}
+.loader-hex svg.ring {
+  position: absolute; left: 0; top: 0;
+  width: 86px; height: 86px;
+  -webkit-animation: hex-spin 1.6s linear infinite;
+  animation: hex-spin 1.6s linear infinite;
+}
+.loader-hex svg.ring polygon {
+  fill: none;
+  stroke: {{ACCENT}};
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 80 240;
+  -webkit-animation: hex-dash 1.6s ease-in-out infinite;
+  animation: hex-dash 1.6s ease-in-out infinite;
+}
+@-webkit-keyframes hex-spin { to { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
+@keyframes hex-spin         { to { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
+@-webkit-keyframes hex-dash {
+  0%   { stroke-dashoffset: 0;    }
+  50%  { stroke-dashoffset: -160; }
+  100% { stroke-dashoffset: -320; }
+}
+@keyframes hex-dash {
+  0%   { stroke-dashoffset: 0;    }
+  50%  { stroke-dashoffset: -160; }
+  100% { stroke-dashoffset: -320; }
+}
+#loading .text {
+  margin-top: 18px;
+  font-size: 13px;
+  color: #EEEEF8;
+  letter-spacing: 0.6px;
+}
+#loading .sub {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #8A8699;
+  letter-spacing: 0.4px;
+}
+</style>
+</head>
+<body>
+
+  <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"
+       xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+
+      <symbol id="ic-home" viewBox="0 0 24 24"><path d="M3 11.5 L12 3.5 L21 11.5 M5.5 10 V19.5 H9.5 V14.5 H14.5 V19.5 H18.5 V10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-type" viewBox="0 0 24 24"><path d="M5 6 H19 M12 6 V18 M9 18 H15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 11 V8 a4 4 0 0 1 8 0 V11" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-swirl" viewBox="0 0 24 24"><path d="M20 12 a8 8 0 1 1 -8 -8 c5 0 7 4 5 7 c-2 3 -7 1 -6 -2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-shield" viewBox="0 0 24 24"><path d="M12 3 L4 6 V12 C4 16.5 7 19.5 12 21 C17 19.5 20 16.5 20 12 V6 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-ghost" viewBox="0 0 24 24"><path d="M5 11 a7 7 0 0 1 14 0 V20 L17 18.5 L15 20 L13 18.5 L11 20 L9 18.5 L7 20 L5 18.5 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="9.5" cy="11" r="1" fill="currentColor"/><circle cx="14.5" cy="11" r="1" fill="currentColor"/></symbol>
+      <symbol id="ic-package" viewBox="0 0 24 24"><path d="M4 7 L12 3 L20 7 L20 17 L12 21 L4 17 Z M4 7 L12 11 L20 7 M12 11 V21" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 2 V5 M12 19 V22 M2 12 H5 M19 12 H22 M5 5 L7 7 M17 17 L19 19 M5 19 L7 17 M17 7 L19 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+
+      <symbol id="ic-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="15" y1="15" x2="20" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-min" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-max" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-close" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+      <symbol id="ic-check" viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="11" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1" fill="currentColor"/></symbol>
+      <symbol id="ic-success" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><polyline points="7,12 10.5,15.5 17,9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-error" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+
+      <symbol id="ic-key" viewBox="0 0 24 24"><circle cx="8.5" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 12 L20 12 L20 15 M17 12 V14.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-tag" viewBox="0 0 24 24"><path d="M4 4 H12 L20 12 L12 20 L4 12 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/></symbol>
+      <symbol id="ic-box" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="4" y1="10" x2="20" y2="10" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-fx" viewBox="0 0 24 24"><path d="M14 4 c-2 0 -3 1 -3 3 V12 H8 M11 12 H16 M8 20 H11 V12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-diamond" viewBox="0 0 24 24"><path d="M12 4 L20 12 L12 20 L4 12 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-link" viewBox="0 0 24 24"><path d="M10 13 a4 4 0 0 0 6 0 L19 10 a4 4 0 0 0 -6 -6 L11 5.5 M14 11 a4 4 0 0 0 -6 0 L5 14 a4 4 0 0 0 6 6 L13 18.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-zap" viewBox="0 0 24 24"><path d="M13 3 L5 14 H11 L10 21 L18 10 H12 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-doc" viewBox="0 0 24 24"><path d="M6 3 H14 L19 8 V20 a1 1 0 0 1 -1 1 H6 a1 1 0 0 1 -1 -1 V4 a1 1 0 0 1 1 -1 Z M14 3 V8 H19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-pi" viewBox="0 0 24 24"><path d="M5 7 H20 M9 7 V19 M16 7 V17 a2 2 0 0 0 3 -1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-hash" viewBox="0 0 24 24"><line x1="9" y1="4" x2="7" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="17" y1="4" x2="15" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="4" y1="10" x2="20" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="4" y1="14" x2="20" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="9" width="6" height="6" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="9" y1="2" x2="9" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="15" y1="2" x2="15" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="9" y1="19" x2="9" y2="22" stroke="currentColor" stroke-width="1.5"/><line x1="15" y1="19" x2="15" y2="22" stroke="currentColor" stroke-width="1.5"/><line x1="2" y1="9" x2="5" y2="9" stroke="currentColor" stroke-width="1.5"/><line x1="2" y1="15" x2="5" y2="15" stroke="currentColor" stroke-width="1.5"/><line x1="19" y1="9" x2="22" y2="9" stroke="currentColor" stroke-width="1.5"/><line x1="19" y1="15" x2="22" y2="15" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-shuffle" viewBox="0 0 24 24"><path d="M3 7 H6 L17 17 H21 M3 17 H6 L9 14 M14 10 L17 7 H21 M17 4 L21 7 L17 10 M17 14 L21 17 L17 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-equal" viewBox="0 0 24 24"><line x1="5" y1="10" x2="19" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="5" y1="14" x2="19" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-swap" viewBox="0 0 24 24"><path d="M5 8 H19 L16 5 M19 8 L16 11 M5 16 L8 13 M5 16 L8 19 M5 16 H19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-archive" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="3" width="18" height="4" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="12" x2="14" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="8" y1="8" x2="20" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="20" y1="4" x2="8" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="13" y="4" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="13" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="13" y="13" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-arrow-r" viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><polyline points="14,6 20,12 14,18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-code" viewBox="0 0 24 24"><polyline points="8,8 4,12 8,16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16,8 20,12 16,16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="14" y1="5" x2="10" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-flow" viewBox="0 0 24 24"><path d="M4 6 H20 L14 12 L20 18 H4 L10 12 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-question" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9 a2.5 2.5 0 0 1 5 0 c0 2 -2.5 2 -2.5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></symbol>
+      <symbol id="ic-trash" viewBox="0 0 24 24"><polyline points="4,7 20,7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9 7 V4 H15 V7 M6 7 V20 a1 1 0 0 0 1 1 H17 a1 1 0 0 0 1 -1 V7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-bug" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="11" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="8" x2="12" y2="19" stroke="currentColor" stroke-width="1.5"/><line x1="4" y1="10" x2="8" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="16" y1="10" x2="20" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="4" y1="14" x2="8" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="16" y1="14" x2="20" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="4" y1="18" x2="8" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="16" y1="17" x2="20" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 8 a2 2 0 0 1 4 0" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-droplet" viewBox="0 0 24 24"><path d="M12 3 C7 9 5 13 5 16 a7 7 0 0 0 14 0 C19 13 17 9 12 3 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><ellipse cx="12" cy="12" rx="4" ry="9" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-eye" viewBox="0 0 24 24"><path d="M2 12 C5 6 8.5 4 12 4 S19 6 22 12 C19 18 15.5 20 12 20 S5 18 2 12 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-eye-off" viewBox="0 0 24 24"><path d="M2 12 C5 6 8.5 4 12 4 S19 6 22 12 C19 18 15.5 20 12 20 S5 18 2 12 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="ic-mask" viewBox="0 0 24 24"><path d="M3 7 a17 17 0 0 1 18 0 V13 a8 8 0 0 1 -9 8 a8 8 0 0 1 -9 -8 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="8" cy="11" r="1.5" fill="currentColor"/><circle cx="16" cy="11" r="1.5" fill="currentColor"/></symbol>
+      <symbol id="ic-radiation" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5" fill="currentColor"/><path d="M12 4 a8 8 0 0 0 -6.9 4 L9 10.5 a4 4 0 0 1 3 -1.75 Z" fill="currentColor" opacity="0.8"/><path d="M12 4 a8 8 0 0 1 6.9 4 L15 10.5 a4 4 0 0 0 -3 -1.75 Z" fill="currentColor" opacity="0.8"/><path d="M12 20 a8 8 0 0 0 6.9 -4 L15 13.5 a4 4 0 0 1 -6 0 L5.1 16 a8 8 0 0 0 6.9 4 Z" fill="currentColor" opacity="0.8"/></symbol>
+      <symbol id="ic-skull" viewBox="0 0 24 24"><path d="M5 12 a7 7 0 0 1 14 0 V16 H17 V19 H14 V17 H10 V19 H7 V16 H5 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="9" cy="12" r="1.5" fill="currentColor"/><circle cx="15" cy="12" r="1.5" fill="currentColor"/></symbol>
+      <symbol id="ic-brush" viewBox="0 0 24 24"><path d="M8 14 L4 18 a2 2 0 0 0 2 2 L10 16 M14 4 L20 10 L13 17 L7 11 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-enter" viewBox="0 0 24 24"><polyline points="4,8 4,4 20,4 20,20 4,20 4,16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="2" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><polyline points="11,8 15,12 11,16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-chevron-down" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-export" viewBox="0 0 24 24"><path d="M5 9 V19 a1 1 0 0 0 1 1 H18 a1 1 0 0 0 1 -1 V9" fill="none" stroke="currentColor" stroke-width="1.5"/><polyline points="8,7 12,3 16,7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-palette" viewBox="0 0 24 24"><path d="M12 3 a9 9 0 0 0 0 18 c1.5 0 2 -1 2 -2 c0 -1.5 1 -2 2.5 -2 H19 a2 2 0 0 0 2 -2 a9 9 0 0 0 -9 -10 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="7" cy="11" r="1.2" fill="currentColor"/><circle cx="9.5" cy="7" r="1.2" fill="currentColor"/><circle cx="14.5" cy="6.5" r="1.2" fill="currentColor"/><circle cx="17.5" cy="10" r="1.2" fill="currentColor"/></symbol>
+      <symbol id="ic-refresh" viewBox="0 0 24 24"><path d="M20 11 a8 8 0 1 0 -2 6 M20 4 V11 H13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-discord" viewBox="0 0 24 24"><path d="M19.5 5.5 a17 17 0 0 0 -4.3 -1.3 l-0.2 0.5 a13 13 0 0 0 -5.9 0 l-0.2 -0.5 a17 17 0 0 0 -4.3 1.3 c-2.7 4.1 -3.4 8 -3.1 11.9 a17 17 0 0 0 5.2 2.6 l1.1 -1.6 a11 11 0 0 1 -1.7 -0.8 l0.4 -0.3 a12 12 0 0 0 10.4 0 l0.4 0.3 a11 11 0 0 1 -1.7 0.8 l1.1 1.6 a17 17 0 0 0 5.2 -2.6 c0.4 -4.5 -0.5 -8.3 -3.1 -11.9 Z M9 14.5 c-1.1 0 -2 -1 -2 -2.2 c0 -1.2 0.9 -2.2 2 -2.2 c1.1 0 2 1 2 2.2 c0 1.2 -0.9 2.2 -2 2.2 Z M15 14.5 c-1.1 0 -2 -1 -2 -2.2 c0 -1.2 0.9 -2.2 2 -2.2 c1.1 0 2 1 2 2.2 c0 1.2 -0.9 2.2 -2 2.2 Z" fill="currentColor"/></symbol>
+      <symbol id="ic-github" viewBox="0 0 24 24"><path d="M12 2 a10 10 0 0 0 -3.2 19.5 c0.5 0.1 0.7 -0.2 0.7 -0.5 v-1.7 c-2.8 0.6 -3.4 -1.3 -3.4 -1.3 c-0.5 -1.2 -1.1 -1.5 -1.1 -1.5 c-0.9 -0.6 0.1 -0.6 0.1 -0.6 c1 0.1 1.5 1 1.5 1 c0.9 1.5 2.3 1.1 2.9 0.8 c0.1 -0.6 0.4 -1.1 0.6 -1.4 c-2.2 -0.3 -4.6 -1.1 -4.6 -5 c0 -1.1 0.4 -2 1 -2.7 c-0.1 -0.3 -0.4 -1.3 0.1 -2.7 c0 0 0.8 -0.3 2.7 1 a9.4 9.4 0 0 1 5 0 c1.9 -1.3 2.7 -1 2.7 -1 c0.5 1.4 0.2 2.4 0.1 2.7 c0.6 0.7 1 1.6 1 2.7 c0 3.9 -2.4 4.7 -4.6 5 c0.4 0.3 0.7 0.9 0.7 1.9 v2.8 c0 0.3 0.2 0.6 0.7 0.5 A10 10 0 0 0 12 2 Z" fill="currentColor"/></symbol>
+      <symbol id="ic-external" viewBox="0 0 24 24"><path d="M14 4 H20 V10 M20 4 L10 14 M19 13 V19 a1 1 0 0 1 -1 1 H5 a1 1 0 0 1 -1 -1 V6 a1 1 0 0 1 1 -1 H11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-folder" viewBox="0 0 24 24"><path d="M3 7 a1 1 0 0 1 1 -1 H9 L11 8 H20 a1 1 0 0 1 1 1 V18 a1 1 0 0 1 -1 1 H4 a1 1 0 0 1 -1 -1 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-folder-scan" viewBox="0 0 24 24"><path d="M3 7 a1 1 0 0 1 1 -1 H8 L10 8 H20 a1 1 0 0 1 1 1 V18 a1 1 0 0 1 -1 1 H4 a1 1 0 0 1 -1 -1 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="13" cy="13" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="15" y1="15" x2="17" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-bolt" viewBox="0 0 24 24"><path d="M12 3 V11 H18 L11 21 V13 H6 Z" fill="currentColor"/></symbol>
+      <symbol id="ic-clipboard" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="2" width="6" height="4" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-pen" viewBox="0 0 24 24"><path d="M14 4 L20 10 L9 21 H3 V15 Z M13 5 L19 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-fingerprint" viewBox="0 0 24 24"><path d="M5 12 a7 7 0 0 1 14 0 M8 12 a4 4 0 0 1 8 0 c0 4 -1 6 -3 8 M11 12 c0 4 1 6 2 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-layers" viewBox="0 0 24 24"><polygon points="12,3 21,8 12,13 3,8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><polyline points="3,12 12,17 21,12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><polyline points="3,16 12,21 21,16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-share" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="8.3" y1="11" x2="15.7" y2="7.2" stroke="currentColor" stroke-width="1.5"/><line x1="8.3" y1="13" x2="15.7" y2="16.8" stroke="currentColor" stroke-width="1.5"/></symbol>
+
+      <symbol id="ic-tab-renaming" viewBox="0 0 24 24">
+
+        <text x="3" y="17" font-family="Arial" font-weight="700" font-size="14" fill="currentColor">Aa</text>
+      </symbol>
+
+      <symbol id="ic-tab-encryption" viewBox="0 0 24 24">
+
+        <rect x="5" y="11" width="14" height="10" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M8 11 V8 a4 4 0 0 1 8 0 V11" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      </symbol>
+
+      <symbol id="ic-tab-obfuscation" viewBox="0 0 24 24">
+
+        <line x1="3" y1="7" x2="17" y2="7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <polyline points="13,4 17,7 13,10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="21" y1="17" x2="7" y2="17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <polyline points="11,14 7,17 11,20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+
+      <symbol id="ic-tab-anti" viewBox="0 0 24 24">
+
+        <path d="M12 3 L4 6 V12 C4 16.5 7 19.5 12 21 C17 19.5 20 16.5 20 12 V6 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      </symbol>
+
+      <symbol id="ic-tab-stealth" viewBox="0 0 24 24">
+
+        <path d="M5 12 a7 7 0 0 1 14 0 V20 L16.5 18.5 L13.5 20 L10.5 18.5 L7.5 20 L5 18.5 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      </symbol>
+
+      <symbol id="ic-tab-anticrack" viewBox="0 0 24 24">
+
+        <ellipse cx="12" cy="13" rx="4.5" ry="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <line x1="12" y1="6.5" x2="12" y2="19.5" stroke="currentColor" stroke-width="1.4"/>
+        <line x1="9.5" y1="7" x2="7" y2="3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="14.5" y1="7" x2="17" y2="3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="7.5" y1="10" x2="3" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="16.5" y1="10" x2="21" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="7.5" y1="13.5" x2="3" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="16.5" y1="13.5" x2="21" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="7.5" y1="17" x2="3" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="16.5" y1="17" x2="21" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </symbol>
+
+      <symbol id="ic-tab-manual" viewBox="0 0 24 24">
+
+        <rect x="6" y="4" width="12" height="17" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <rect x="9" y="2" width="6" height="3.5" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <polyline points="9,10 10.5,11.5 13,9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="14" y1="10" x2="16" y2="10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        <polyline points="9,14.5 10.5,16 13,13.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="14" y1="14.5" x2="16" y2="14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="8" y1="18" x2="14" y2="18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </symbol>
+
+      <symbol id="ic-tab-libraries" viewBox="0 0 24 24">
+
+        <rect x="4"  y="4" width="6" height="16" rx="1" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <rect x="13" y="4" width="6" height="16" rx="1" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      </symbol>
+
+      <symbol id="ic-tab-settings" viewBox="0 0 24 24">
+
+        <path d="M12 4 V6 M12 18 V20 M4 12 H6 M18 12 H20 M5.6 5.6 L7 7 M17 17 L18.4 18.4 M5.6 18.4 L7 17 M17 7 L18.4 5.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      </symbol>
+
+      <symbol id="ic-braces" viewBox="0 0 24 24"><path d="M8 4 C5 4 6 8 5 11 C4 11 4 13 5 13 C6 13 5 17 5 19 C5 21 6 20 8 20 M16 4 C19 4 18 8 19 11 C20 11 20 13 19 13 C18 13 19 17 19 19 C19 21 18 20 16 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-cube" viewBox="0 0 24 24"><path d="M12 3 L20 7 V17 L12 21 L4 17 V7 Z M12 3 V12 M12 12 L4 7 M12 12 L20 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="7" ry="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 5 V12 c0 1.4 3.1 2.5 7 2.5 s7 -1.1 7 -2.5 V5 M5 12 V19 c0 1.4 3.1 2.5 7 2.5 s7 -1.1 7 -2.5 V12" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-bracket" viewBox="0 0 24 24"><path d="M9 4 H5 V20 H9 M15 4 H19 V20 H15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="10" y1="12" x2="14" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-quote" viewBox="0 0 24 24"><path d="M5 6 C5 5 6 4 7 4 H9 V10 C9 12 7 13 5 13 V11 C6 11 7 10 7 9 H6 a1 1 0 0 1 -1 -1 Z M14 6 C14 5 15 4 16 4 H18 V10 C18 12 16 13 14 13 V11 C15 11 16 10 16 9 H15 a1 1 0 0 1 -1 -1 Z" fill="currentColor"/><path d="M5 18 H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-binary" viewBox="0 0 24 24"><rect x="4" y="3" width="6" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="16" y1="3" x2="16" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><polyline points="14,5 16,3 16,11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="14" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="14" y="15" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="4" y1="13" x2="6" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="13" x2="9" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="5" y1="21" x2="9" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><polyline points="5,17 7,15 7,21" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-dna" viewBox="0 0 24 24"><path d="M7 3 C7 8 17 8 17 13 C17 18 7 18 7 21 M17 3 C17 8 7 8 7 13 C7 18 17 18 17 21" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="6" x2="15" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="14" x2="15" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="18" x2="15" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-puzzle" viewBox="0 0 24 24"><path d="M9 3 H11 a1 1 0 0 1 1 1 V6 a1 1 0 0 0 2 0 a2 2 0 0 1 4 0 a1 1 0 0 0 2 0 V8 a1 1 0 0 1 -1 1 H17 a1 1 0 0 0 0 2 a2 2 0 0 1 0 4 a1 1 0 0 0 0 2 H19 a1 1 0 0 1 1 1 V20 a1 1 0 0 1 -1 1 H4 a1 1 0 0 1 -1 -1 V11 a1 1 0 0 1 1 -1 H6 a1 1 0 0 0 0 -2 a2 2 0 0 1 4 0 a1 1 0 0 0 2 0 V4 a1 1 0 0 1 -1 -1 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-runtime" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 2 H15 M12 2 V5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 9 V13 L15 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 8 L21 6 M5 8 L3 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-pointer" viewBox="0 0 24 24"><path d="M5 3 L5 16 L9 13 L11.5 19 L14 18 L11.5 12 H17 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-fork" viewBox="0 0 24 24"><line x1="12" y1="4" x2="12" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 10 L6 17 V20 M12 10 L18 17 V20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="4" r="1.4" fill="currentColor"/><circle cx="6" cy="20" r="1.4" fill="currentColor"/><circle cx="18" cy="20" r="1.4" fill="currentColor"/></symbol>
+      <symbol id="ic-curtain" viewBox="0 0 24 24"><line x1="3" y1="4" x2="21" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 4 C5 10 7 12 7 18 V20 C7 21 5 21 5 20 V4 M9 4 V18 C9 19 7 20 7 18 M12 4 C12 12 12 14 12 20 V21 M15 4 V18 C15 19 17 20 17 18 M19 4 C19 10 17 12 17 18 V20 C17 21 19 21 19 20 V4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-scatter" viewBox="0 0 24 24"><circle cx="5" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="4" r="1.2" fill="currentColor"/><circle cx="19" cy="6" r="1.5" fill="currentColor"/><circle cx="6" cy="12" r="1.2" fill="currentColor"/><circle cx="15" cy="11" r="1.5" fill="currentColor"/><circle cx="20" cy="14" r="1.2" fill="currentColor"/><circle cx="4" cy="19" r="1.5" fill="currentColor"/><circle cx="11" cy="19" r="1.2" fill="currentColor"/><circle cx="17" cy="20" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-switch" viewBox="0 0 24 24"><path d="M4 6 H10 L13 9 H20 M4 12 H10 L13 12 H20 M4 18 H10 L13 15 H20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="6" r="1.4" fill="currentColor"/><circle cx="10" cy="12" r="1.4" fill="currentColor"/><circle cx="10" cy="18" r="1.4" fill="currentColor"/></symbol>
+      <symbol id="ic-stack-down" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="3" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="9" width="16" height="3" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="14" width="16" height="3" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.5"/><polyline points="9,19 12,22 15,19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-branch" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="19" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="6" y1="7" x2="6" y2="17" stroke="currentColor" stroke-width="1.5"/><path d="M6 11 C6 9 9 8 12 8 a6 6 0 0 1 4 2.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="ic-vm-box" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="6" y="7" width="12" height="7" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="10.5" r="0.8" fill="currentColor"/><line x1="11" y1="10.5" x2="15" y2="10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="9" y1="20" x2="15" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="20" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="ic-server" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="11" width="16" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="19" width="16" height="2.5" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="7.5" cy="6" r="0.8" fill="currentColor"/><circle cx="7.5" cy="14" r="0.8" fill="currentColor"/><line x1="10" y1="6" x2="17" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="10" y1="14" x2="17" y2="14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+      <symbol id="ic-checksum" viewBox="0 0 24 24"><path d="M12 3 L4 6 V12 C4 16.5 7 19.5 12 21 C17 19.5 20 16.5 20 12 V6 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><polyline points="8,12 11,15 16,9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-disasm-block" viewBox="0 0 24 24"><line x1="4" y1="6" x2="14" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="4" y1="10" x2="11" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="4" y1="14" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="4" y1="18" x2="11" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="16" y1="6" x2="22" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="22" y1="6" x2="16" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="ic-mem-lock" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="6" y1="5" x2="6" y2="8" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="5" x2="10" y2="8" stroke="currentColor" stroke-width="1.5"/><line x1="14" y1="5" x2="14" y2="8" stroke="currentColor" stroke-width="1.5"/><line x1="18" y1="5" x2="18" y2="8" stroke="currentColor" stroke-width="1.5"/><rect x="9.5" y="13" width="5" height="4" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 13 V11.5 a1.5 1.5 0 0 1 3 0 V13" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+      <symbol id="ic-hook" viewBox="0 0 24 24"><path d="M14 3 V11 a5 5 0 0 1 -10 0 V8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="14" cy="3" r="1.4" fill="currentColor"/><line x1="4" y1="20" x2="20" y2="20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="7" y1="16" x2="17" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 2"/></symbol>
+      <symbol id="ic-stamp" viewBox="0 0 24 24"><path d="M8 11 V8 a4 4 0 0 1 8 0 V11 H17 a1 1 0 0 1 1 1 V14 H6 V12 a1 1 0 0 1 1 -1 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><line x1="4" y1="20" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="4" y1="17" x2="20" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 2"/></symbol>
+      <symbol id="ic-explode" viewBox="0 0 24 24"><path d="M12 3 L13 9 L18 6 L15 11 L21 12 L15 13 L18 18 L13 15 L12 21 L11 15 L6 18 L9 13 L3 12 L9 11 L6 6 L11 9 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="ic-merge" viewBox="0 0 24 24"><path d="M5 4 V11 a4 4 0 0 0 4 4 H15 a4 4 0 0 1 4 4 V20 M19 4 V11 a4 4 0 0 1 -4 4 H9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="2,7 5,4 8,7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16,7 19,4 22,7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="12,17 15,20 12,23" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="titlebar" id="titleBar">
+    <div class="titlebar-text">
+      <b>Made By Freemasonry</b>
+    </div>
+    <div class="titlebar-controls">
+      <div class="ctl" onclick="bridge('WindowMinimize')"><svg class="icon icon-14"><use xlink:href="#ic-min"/></svg></div>
+      <div class="ctl" onclick="bridge('WindowMaximize')"><svg class="icon icon-14"><use xlink:href="#ic-max"/></svg></div>
+      <div class="ctl close" onclick="bridge('WindowClose')"><svg class="icon icon-14"><use xlink:href="#ic-close"/></svg></div>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <div class="layout">
+
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="name"><b>MASON</b><span>P R O T E C T O R</span></div>
+        </div>
+        <div class="sidebar-search">
+          <svg class="icon icon-14 ico-search"><use xlink:href="#ic-search"/></svg>
+          <input type="text" id="search" placeholder="Search options...">
+        </div>
+        <div class="sidebar-nav" id="navList">
+          <div class="nav-item active" data-page="home"><svg class="icon ico"><use xlink:href="#ic-home"/></svg>Home</div>
+          <div class="nav-item" data-page="renaming"><svg class="icon ico"><use xlink:href="#ic-tab-renaming"/></svg>Renaming</div>
+          <div class="nav-item" data-page="encryption"><svg class="icon ico"><use xlink:href="#ic-tab-encryption"/></svg>Encryption</div>
+          <div class="nav-item" data-page="obfuscation"><svg class="icon ico"><use xlink:href="#ic-tab-obfuscation"/></svg>Obfuscation</div>
+          <div class="nav-item" data-page="anti"><svg class="icon ico"><use xlink:href="#ic-tab-anti"/></svg>Anti-Analysis</div>
+          <div class="nav-item" data-page="stealth"><svg class="icon ico"><use xlink:href="#ic-tab-stealth"/></svg>Stealth</div>
+          <div class="nav-item" data-page="anticrack"><svg class="icon ico"><use xlink:href="#ic-tab-anticrack"/></svg>Anti-Crack</div>
+          <div class="nav-item" data-page="manual"><svg class="icon ico"><use xlink:href="#ic-tab-manual"/></svg>Manual</div>
+          <div class="nav-item" data-page="libraries"><svg class="icon ico"><use xlink:href="#ic-tab-libraries"/></svg>Libraries</div>
+          <div class="nav-item" data-page="settings"><svg class="icon ico"><use xlink:href="#ic-tab-settings"/></svg>Settings</div>
+        </div>
+        <div class="sidebar-footer">v4.0  ·  Freemasonry build</div>
+      </aside>
+
+      <main class="content">
+
+        <div class="page active" data-page="home">
+          <div class="hero">
+            <div class="ttl"><span class="mark">Encode</span> It Your Mode</div>
+            <div class="sub">Hand-crafted .NET assembly hardening · ~50 protections</div>
+          </div>
+
+          <div class="card">
+            <h2><span class="bar"></span>Target file</h2>
+            <div class="file-row">
+              <div id="filePath" class="file-path empty">Click Browse to choose an .exe / .dll...</div>
+              <button class="btn btn-secondary" onclick="bridge('Browse')"><svg class="icon icon-14"><use xlink:href="#ic-folder"/></svg>Browse</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2><span class="bar"></span>Quick action</h2>
+
+            <div class="opt maxenc-opt">
+              <div class="meta">
+                <div class="ttl maxenc-ttl">Maximum Encryption</div>
+                <div class="desc">Every safe protection at peak intensity. Output grows large.</div>
+              </div>
+              <label class="toggle">
+                <input id="opt-MaximumEncryption" type="checkbox" onchange="bridge('SetOption','MaximumEncryption', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="opt">
+              <div class="meta">
+                <div class="ttl">Enable every protection</div>
+                <div class="desc">Flip every single toggle in every section on or off.</div>
+              </div>
+              <label class="toggle">
+                <input id="enableAll" type="checkbox" onchange="bridge('EnableAll', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="opt">
+              <div class="meta">
+                <div class="ttl hideenc-ttl">Hide Encryption</div>
+                <div class="desc">Stealth mode. Heavy invisible protection — binary looks like ordinary compiled code.</div>
+              </div>
+              <label class="toggle">
+                <input id="opt-HideEncryption" type="checkbox" onchange="bridge('SetOption','HideEncryption', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2><span class="bar"></span>Build</h2>
+            <button class="btn btn-primary large" onclick="bridge('Protect')"><svg class="icon icon-16"><use xlink:href="#ic-lock"/></svg>PROTECT</button>
+            <div style="margin-top:14px;">
+              <div class="prog-shell"><div id="progFill" class="prog-fill"></div></div>
+              <div id="status" class="status">Idle.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="page" data-page="renaming"></div>
+        <div class="page" data-page="encryption"></div>
+        <div class="page" data-page="obfuscation"></div>
+        <div class="page" data-page="anti"></div>
+        <div class="page" data-page="stealth"></div>
+        <div class="page" data-page="anticrack"></div>
+
+        <div class="page" data-page="manual">
+          <div class="page-head">
+            <span class="ttl">Manual</span>
+            <span class="sub">Pick exactly which namespaces, types, and methods get protected. Everything is checked by default — un-check anything you want kept untouched.</span>
+          </div>
+          <div class="card">
+            <div class="manual-toolbar">
+              <button class="btn btn-secondary" onclick="manualRescan()"><svg class="icon icon-14"><use xlink:href="#ic-refresh"/></svg>Rescan target</button>
+              <button class="btn btn-secondary" onclick="manualSetAll(true)">Check all</button>
+              <button class="btn btn-secondary" onclick="manualSetAll(false)">Uncheck all</button>
+              <input type="text" id="manualSearch" placeholder="Search..." oninput="manualFilter(this.value)">
+              <span id="manualCount" style="margin-left:auto; color:#A8A4B8; font-size:11.5px;">0 excluded</span>
+            </div>
+            <div id="manualMsg" class="manual-msg">Pick a target file from the Home tab first.</div>
+            <div id="manualTree" class="manual-tree"></div>
+          </div>
+        </div>
+
+        <div class="page" data-page="libraries">
+          <div class="page-head"><span class="ttl">Libraries</span><span class="sub">Bundle referenced DLLs into the output</span></div>
+          <div class="card">
+            <h2><span class="bar"></span>Dependency scan</h2>
+            <button class="btn btn-secondary" onclick="bridge('ScanLibraries')"><svg class="icon icon-14"><use xlink:href="#ic-folder-scan"/></svg>Scan referenced DLLs</button>
+            <span id="libStatus" style="margin-left:14px; color:#A09CB2; font-size:11.5px;">0 selected</span>
+            <div class="lib-list" id="libList"></div>
+          </div>
+          <div class="card">
+            <h2><span class="bar"></span>Export protected code to a separate DLL</h2>
+            <div class="opt">
+              <div class="icobox"><svg class="icon"><use xlink:href="#ic-export"/></svg></div>
+              <div class="meta">
+                <div class="ttl">Enable</div>
+                <div class="desc">Export the protected method bodies to a separate DLL file.</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" onchange="setOpt('ExportCodeToDll', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="field">
+              <label>DLL name</label>
+              <input type="text" id="dllName" placeholder="MasonCore.dll" value="MasonCore.dll" oninput="bridge('SetText', 'CodeDllName', this.value)">
+            </div>
+          </div>
+        </div>
+
+        <div class="page" data-page="settings">
+          <div class="page-head"><span class="ttl">Settings</span><span class="sub">Theme and personalisation</span></div>
+          <div class="card">
+            <h2><span class="bar"></span>Accent colour</h2>
+            <div class="settings-row">
+              <div class="swatch"></div>
+              <button class="btn pick-btn" onclick="cpOpen()" title="Open the colour picker">
+                <span class="pick-btn-dot"></span>
+                <svg class="icon icon-14"><use xlink:href="#ic-palette"/></svg>
+                <span class="pick-btn-label">Pick</span>
+              </button>
+              <button class="btn btn-secondary reset-btn" onclick="bridge('ResetTheme')" title="Reset to default accent">
+                <svg class="icon icon-14"><use xlink:href="#ic-refresh"/></svg>Reset
+              </button>
+            </div>
+            <h2 style="margin-top:18px;"><span class="bar"></span>Presets</h2>
+            <div class="preset-row" id="presetRow"></div>
+          </div>
+          <div class="card">
+            <h2><span class="bar"></span>About</h2>
+            <div class="about-body">
+              <b class="about-title">Mason Protector</b> &mdash; Freemasonry edition.<br>
+              Copyright &copy; MasonGroup &middot; Battal Alqhtani &amp; Turki Alotibi.
+            </div>
+            <div class="about-links">
+              <a class="social-link discord" href="javascript:void(0)"
+                 onclick="openUrl('https://discord.gg/re6wZ9AePq')"
+                 title="Join our Discord server">
+                <span class="social-icon"><svg class="icon icon-18"><use xlink:href="#ic-discord"/></svg></span>
+                <span class="social-text">
+                  <span class="social-head">Discord</span>
+                  <span class="social-sub">discord.gg/re6wZ9AePq</span>
+                </span>
+                <svg class="icon icon-14 social-out"><use xlink:href="#ic-external"/></svg>
+              </a>
+              <a class="social-link github" href="javascript:void(0)"
+                 onclick="openUrl('https://github.com/ALMASONYH')"
+                 title="Visit our GitHub organisation">
+                <span class="social-icon"><svg class="icon icon-18"><use xlink:href="#ic-github"/></svg></span>
+                <span class="social-text">
+                  <span class="social-head">GitHub</span>
+                  <span class="social-sub">github.com/ALMASONYH</span>
+                </span>
+                <svg class="icon icon-14 social-out"><use xlink:href="#ic-external"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <div id="toasts"></div>
+
+  <div id="cpModal" class="cp-modal" aria-hidden="true">
+    <div class="cp-dialog">
+      <div class="cp-head">
+        <span class="cp-title">Pick a colour</span>
+        <button class="cp-x" type="button" onclick="cpClose()" title="Close">
+          <svg class="icon icon-14"><use xlink:href="#ic-close"/></svg>
+        </button>
+      </div>
+      <div class="cp-body">
+
+        <div class="cp-sv" id="cpSV">
+          <div class="cp-sv-overlay-h"></div>
+          <div class="cp-sv-overlay-v"></div>
+          <div class="cp-sv-cursor" id="cpSVCursor"></div>
+        </div>
+
+        <div class="cp-hue" id="cpHue">
+          <div class="cp-hue-cursor" id="cpHueCursor"></div>
+        </div>
+
+        <div class="cp-row">
+          <div class="cp-preview" id="cpPreview"></div>
+          <div class="cp-fields">
+            <div class="cp-field">
+              <label>HEX</label>
+              <input id="cpHex" type="text" maxlength="7" spellcheck="false"
+                     oninput="cpOnHexInput()"
+                     onblur="cpOnHexBlur()"
+                     onkeydown="if(event.keyCode===13){this.blur();cpApply();}">
+            </div>
+            <div class="cp-field-row">
+              <div class="cp-field cp-field-sm">
+                <label>R</label>
+                <input id="cpR" type="text" maxlength="3" spellcheck="false"
+                       oninput="cpOnRgbInput()"
+                       onblur="cpOnRgbBlur()"
+                       onkeydown="if(event.keyCode===13){this.blur();cpApply();}">
+              </div>
+              <div class="cp-field cp-field-sm">
+                <label>G</label>
+                <input id="cpG" type="text" maxlength="3" spellcheck="false"
+                       oninput="cpOnRgbInput()"
+                       onblur="cpOnRgbBlur()"
+                       onkeydown="if(event.keyCode===13){this.blur();cpApply();}">
+              </div>
+              <div class="cp-field cp-field-sm">
+                <label>B</label>
+                <input id="cpB" type="text" maxlength="3" spellcheck="false"
+                       oninput="cpOnRgbInput()"
+                       onblur="cpOnRgbBlur()"
+                       onkeydown="if(event.keyCode===13){this.blur();cpApply();}">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cp-foot">
+        <button class="btn btn-secondary cp-btn" type="button" onclick="cpClose()">Cancel</button>
+        <button class="btn pick-btn cp-btn cp-apply" type="button" onclick="cpApply()">
+          <span class="pick-btn-label">Apply</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading">
+    <div class="loader-hex">
+      <svg class="body" viewBox="0 0 100 100">
+        <polygon points="50,6 92,28 92,72 50,94 8,72 8,28" stroke-linejoin="round"/>
+      </svg>
+      <svg class="ring" viewBox="0 0 100 100">
+        <polygon points="50,6 92,28 92,72 50,94 8,72 8,28" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="text" id="loadingText">Protecting...</div>
+    <div class="sub"  id="loadingSub">This usually takes 10–30 seconds.</div>
+  </div>
+
+<script>
+
+var OPTIONS = [
+  { tab:'renaming', name:'EnableRenamer',          ttl:'Enable renamer (master)', ico:'ic-key',         desc:'Master switch that turns the whole rename pipeline on or off.' },
+  { tab:'renaming', name:'RenameNamespaces',       ttl:'Rename namespaces',       ico:'ic-braces',      desc:'Mangle every user-defined namespace into random tokens.' },
+  { tab:'renaming', name:'SeparateNamespacePerClass', ttl:'Separate namespace per class', ico:'ic-braces', desc:'When enabled, every class gets its own unique namespace. When disabled, types that shared a namespace stay grouped under one renamed namespace.' },
+  { tab:'renaming', name:'RenameTypes',            ttl:'Rename types',            ico:'ic-cube',        desc:'Scramble class, struct, enum, and interface names.' },
+  { tab:'renaming', name:'RenameMethods',          ttl:'Rename methods',          ico:'ic-fx',          desc:'Rename every non-virtual user method to opaque identifiers.' },
+  { tab:'renaming', name:'RenameFields',           ttl:'Rename fields',           ico:'ic-database',    desc:'Rewrite instance and static field names to random tokens.' },
+  { tab:'renaming', name:'RenameProperties',       ttl:'Rename properties',       ico:'ic-bracket',     desc:'Rename the getter / setter pair of every property.' },
+  { tab:'renaming', name:'RenameEvents',           ttl:'Rename events',           ico:'ic-zap',         desc:'Rename event names together with their backing delegate field.' },
+  { tab:'renaming', name:'HiddenRename',           ttl:'Hidden rename (stealth)', ico:'ic-key',         desc:'Generate names from a real-word dictionary so renaming is camouflaged as normal code. Disabled by Enable All.' },
+
+  { tab:'encryption', name:'StringEncryption',         ttl:'String encryption',          ico:'ic-quote',       desc:'Encrypt every string literal; decrypted lazily on first access.' },
+  { tab:'encryption', name:'ConstantsEncoding',        ttl:'Constants encoding',         ico:'ic-pi',          desc:'Encode float, long, and double constants through decode functions.' },
+  { tab:'encryption', name:'IntEncoding',              ttl:'Integer encoding',           ico:'ic-binary',      desc:'Wrap integer constants in mixed-boolean-arithmetic chains.' },
+  { tab:'encryption', name:'FieldEncryption',          ttl:'Field encryption',           ico:'ic-fingerprint', desc:'Route field reads and writes through per-field decryptor proxies.' },
+  { tab:'encryption', name:'VMObfuscation',            ttl:'VM obfuscation',             ico:'ic-cpu',         desc:'Compile selected methods into a custom miniature virtual machine.' },
+  { tab:'encryption', name:'PolymorphicEncryption',    ttl:'Polymorphic encryption',     ico:'ic-dna',         desc:'Generate a unique decryptor function for every protected method.' },
+  { tab:'encryption', name:'MutationEncoding',         ttl:'Mutation encoding',          ico:'ic-equal',       desc:'Wrap constants in identity-call indirection helpers.' },
+  { tab:'encryption', name:'CrossReferenceEncryption', ttl:'Cross-reference encryption', ico:'ic-swap',        desc:'Hide caller-callee pairs behind randomised proxy chains.' },
+  { tab:'encryption', name:'ResourceProtection',       ttl:'Resource protection',        ico:'ic-archive',     desc:'AES-encrypt embedded resources; decrypted lazily at runtime.' },
+  { tab:'encryption', name:'StringComposition',        ttl:'String composition',         ico:'ic-puzzle',      desc:'Rebuild strings from per-character arithmetic at runtime.' },
+  { tab:'encryption', name:'RuntimeEncryption',        ttl:'RunTime',                    ico:'ic-runtime',     desc:'Store method IL encrypted; resurrected via DynamicMethod when called. Equivalent to MasonProte RunTime.' },
+  { tab:'encryption', name:'ArrayEncryption',          ttl:'Array encryption',           ico:'ic-grid',        desc:'AES-encrypt static array initialisers; decrypted on first read.' },
+  { tab:'encryption', name:'DelegateEncryption',       ttl:'Delegate encryption',        ico:'ic-pointer',     desc:'Hide function-pointer fields behind an indirection registry.' },
+  { tab:'encryption', name:'MethodBodyEncryption',     ttl:'Method body encryption',     ico:'ic-code',        desc:'XOR every method body with its own per-method key.' },
+  { tab:'encryption', name:'CodeEncryption',           ttl:'Code Encryption',            ico:'ic-lock',        desc:'Wrap every static call and newobj in a Debug.Assert-decoy helper on a private vault type. Same indirection style as MasonProte Code Encryption.' },
+  { tab:'obfuscation', name:'Dynamic',                 ttl:'Dynamic Methods',            ico:'ic-shield',      desc:'Rewrite every static call into a cached function-pointer (calli) proxy, so the call target is resolved at runtime instead of being statically linked. Same dispatch style as MasonProte Dynamic Methods.' },
+
+  { tab:'obfuscation', name:'ControlFlow',             ttl:'Control flow',            ico:'ic-flow',        desc:'Inject classic spaghetti-flow jumps into method bodies.' },
+  { tab:'obfuscation', name:'ProxyCalls',              ttl:'Proxy calls',             ico:'ic-share',       desc:'Route every method call through a static proxy hub.' },
+  { tab:'obfuscation', name:'CalliConversion',         ttl:'Calli conversion',        ico:'ic-fork',        desc:'Replace direct call instructions with indirect calli sequences.' },
+  { tab:'obfuscation', name:'Local2Field',             ttl:'Local-to-field',          ico:'ic-box',         desc:'Lift local variables to instance fields on the declaring class.' },
+  { tab:'obfuscation', name:'OpaquePredicates',        ttl:'Opaque predicates',       ico:'ic-question',    desc:'Insert always-true / always-false branches that confuse decompilers.' },
+  { tab:'obfuscation', name:'ReferenceProxy',          ttl:'Reference proxy',         ico:'ic-link',        desc:'Route external member references through property-based indirection.' },
+  { tab:'obfuscation', name:'CallHiding',              ttl:'Call hiding',             ico:'ic-curtain',     desc:'Hide call targets behind mangled signatures and rewritten tokens.' },
+  { tab:'obfuscation', name:'MethodScattering',        ttl:'Method scattering',       ico:'ic-scatter',     desc:'Relocate methods into unrelated host types to break locality.' },
+  { tab:'obfuscation', name:'ControlFlowFlattening2',  ttl:'Control-flow flattening', ico:'ic-switch',      desc:'Flatten methods into a switch-driven state machine dispatcher.' },
+  { tab:'obfuscation', name:'StackUnderflow',          ttl:'Stack underflow',         ico:'ic-stack-down',  desc:'Plant synthetic stack-underflow traps that crash decompilers.' },
+  { tab:'obfuscation', name:'BranchConfusion',         ttl:'Branch confusion',        ico:'ic-branch',      desc:'Add multiple fake jumps that collapse to the same final target.' },
+  { tab:'obfuscation', name:'NumericObfuscation',      ttl:'Numeric obfuscation',     ico:'ic-hash',        desc:'Expand numeric constants into bit-twiddling computation chains.' },
+  { tab:'obfuscation', name:'CodeVirtualization',      ttl:'Code virtualization',     ico:'ic-vm-box',      desc:'Re-implement selected methods as bytecode for a custom VM.' },
+  { tab:'obfuscation', name:'JunkCode',                ttl:'Junk code',               ico:'ic-trash',       desc:'Inject decoy classes and never-called methods to bloat the surface.' },
+
+  { tab:'anti', name:'AntiDebug',      ttl:'Anti-debug',       ico:'ic-bug',           desc:'Detect attached debuggers via IsDebuggerPresent + tick-drift + child traps.' },
+  { tab:'anti', name:'AntiVM',         ttl:'Anti-VM',          ico:'ic-server',        desc:'Detect VMware, VirtualBox, Hyper-V and QEMU via hardware fingerprints.' },
+  { tab:'anti', name:'AntiDump',       ttl:'Anti-dump',        ico:'ic-droplet',       desc:'Zero out PE header pages in memory after JIT to defeat dumpers.' },
+  { tab:'anti', name:'AntiTamper',     ttl:'Anti-tamper',      ico:'ic-checksum',      desc:'Hash every IL body at startup and abort if any byte was modified.' },
+  { tab:'anti', name:'AntiDe4dot',     ttl:'Anti-de4dot',      ico:'ic-ban',           desc:'Inject tokens and IL patterns that crash de4dot on analysis.' },
+  { tab:'anti', name:'AntiILDasm',     ttl:'Anti-ILDasm',      ico:'ic-disasm-block',  desc:'Plant SuppressIldasmAttribute and malformed flags to block ILDasm.' },
+  { tab:'anti', name:'AntiMemoryDump', ttl:'Anti-memory-dump', ico:'ic-mem-lock',      desc:'Periodically re-encrypt decrypted IL pages held in RAM.' },
+  { tab:'anti', name:'AntiHook',       ttl:'Anti-hook',        ico:'ic-hook',          desc:'Verify the prologue bytes of critical Win32 APIs against trampolines.' },
+  { tab:'anti', name:'AntiHttp',       ttl:'Anti-HTTP-sniff',  ico:'ic-globe',         desc:'Detect Fiddler, Wireshark, Charles, and other MITM proxies via cert checks.' },
+
+  { tab:'stealth', name:'HideMethods',      ttl:'Hide methods',           ico:'ic-eye',         desc:'Strip MethodImpl flags and friendly attributes so methods vanish from tools.' },
+  { tab:'stealth', name:'FakeAttributes',   ttl:'Fake attributes',        ico:'ic-mask',        desc:'Plant misleading Compiler-Generated / Designer markers on user code.' },
+  { tab:'stealth', name:'Watermark',        ttl:'Watermark',              ico:'ic-stamp',       desc:'Embed an opaque build-identifier blob for distribution tracking.' },
+  { tab:'stealth', name:'TokenConfusion',   ttl:'Token confusion',        ico:'ic-shuffle',     desc:'Cross-reference type and method tokens in unpredictable order.' },
+  { tab:'stealth', name:'TypeScrambler',    ttl:'Type scrambler',         ico:'ic-layers',      desc:'Reshuffle the order of types and rewrite inheritance chains.' },
+  { tab:'stealth', name:'InvalidMetadata',  ttl:'Invalid metadata',       ico:'ic-radiation',   desc:'Emit metadata streams that load fine but break static analysers.' },
+  { tab:'stealth', name:'DnSpyCrasher',     ttl:'dnSpy crasher',          ico:'ic-explode',     desc:'Plant synthetic IL constructs that crash dnSpy while rendering.' },
+  { tab:'stealth', name:'DecompilerPoison', ttl:'Decompiler poison',      ico:'ic-skull',       desc:'Append unreachable exception-handler tails with stack underflow.' },
+  { tab:'stealth', name:'HideDesignerCode', ttl:'Hide WinForms designer', ico:'ic-brush',       desc:'Split InitializeComponent into chunks, rename them, and body-vault them.' },
+  { tab:'stealth', name:'EntryPointMover',  ttl:'Entry-point mover',      ico:'ic-enter',       desc:'Wrap Main() behind a chain of trampoline thunks before the real call.' },
+  { tab:'stealth', name:'MethodInliner',    ttl:'Method inliner',         ico:'ic-merge',       desc:'Selectively inline tiny helper methods to dissolve call-site identity.' },
+
+  { tab:'anticrack', name:'AntiCrack',                  ttl:'Enable Anti-Crack (master)', ico:'ic-bolt',    desc:'Master switch. On detection of debugger/dump/reverse-engineering, escalate per the actions below.' },
+  { tab:'anticrack', name:'AntiCrackMessageBox',        ttl:'Show MessageBox',            ico:'ic-info',    desc:'At its configured attempt count, pop a MessageBox with your sender name + custom message on the cracker\'s screen.' },
+  { tab:'anticrack', name:'AntiCrackWebhook',           ttl:'Send Discord webhook',       ico:'ic-globe',   desc:'At its configured attempt count, POST to the Discord webhook URL with cracker identity, machine info, and an optional screenshot.' },
+  { tab:'anticrack', name:'AntiCrackWebhookScreenshot', ttl:'Webhook: include screenshot', ico:'ic-eye',    desc:'Capture the cracker\'s full screen and upload it as a webhook attachment.' },
+  { tab:'anticrack', name:'AntiCrackWebhookSysInfo',    ttl:'Webhook: include system info', ico:'ic-cpu',   desc:'Include machine name, user, OS version, and hardware specs in the webhook body.' },
+  { tab:'anticrack', name:'AntiCrackRemoteFile',        ttl:'Download & run remote file', ico:'ic-explode', desc:'At its configured attempt count, download any direct URL (image / exe / bat / any) and silently execute it on the cracker\'s machine.' },
+  { tab:'anticrack', name:'AntiCrackSelfDestruct',      ttl:'Self-destruct',              ico:'ic-trash',   desc:'At its configured attempt count, the protected file deletes itself off disk and the process exits.' }
+];
+
+var TAB_META = {
+  renaming:    { title:'Renaming',           subtitle:'Rewrite identifiers — names stop telling the decompiler what each thing is.' },
+  encryption:  { title:'Encryption',         subtitle:'Strings, constants, fields, and method bodies all encrypted.' },
+  obfuscation: { title:'Obfuscation',        subtitle:'Control flow, predicates, scattering — meaning escapes structure.' },
+  anti:        { title:'Anti-Analysis',      subtitle:'Detect and trap debuggers, VMs, hookers at runtime.' },
+  stealth:     { title:'Stealth & metadata', subtitle:"Hide your assembly's shape from decompilers and metadata readers." },
+  anticrack:   { title:'Anti-Crack',         subtitle:'Escalation pipeline. When a cracker is detected, retaliate with your chosen actions at your chosen attempt thresholds.' }
+};
+
+function safe(fn) { try { fn(); } catch(e) {} }
+
+function bridge(name) {
+  try {
+    var ext = window.external;
+    if (!ext) return;
+    var n = arguments.length - 1;
+    switch (n) {
+      case 0: return ext[name]();
+      case 1: return ext[name](arguments[1]);
+      case 2: return ext[name](arguments[1], arguments[2]);
+      case 3: return ext[name](arguments[1], arguments[2], arguments[3]);
+      case 4: return ext[name](arguments[1], arguments[2], arguments[3], arguments[4]);
+      default: return ext[name]();
+    }
+  } catch (e) {  }
+}
+
+function setOpt(name, value) {
+  safe(function(){ window.external.SetOption(name, !!value); });
+  syncAntiCrackCard(name, !!value);
+  if (name === 'HiddenRename') applyHiddenRenameParamsLock(!!value);
+}
+
+function openUrl(u) { bridge('OpenUrl', u); }
+
+var cpState = { h: 0, s: 1, v: 1, dragSV: false, dragHue: false };
+
+function cpOpen() {
+
+  var sw = document.querySelector('.swatch');
+  var probe = document.createElement('div');
+  probe.style.color = '{{ACCENT}}';
+  document.body.appendChild(probe);
+  var rgbStr = (probe.currentStyle ? probe.currentStyle.color :
+                window.getComputedStyle(probe).color) || 'rgb(138,92,245)';
+  document.body.removeChild(probe);
+  var m = rgbStr.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  var r = m ? parseInt(m[1],10) : 138;
+  var g = m ? parseInt(m[2],10) : 92;
+  var b = m ? parseInt(m[3],10) : 245;
+
+  var hsv = cpRgbToHsv(r, g, b);
+  cpState.h = hsv.h; cpState.s = hsv.s; cpState.v = hsv.v;
+
+  cpSyncUiFromState();
+
+  var modal = document.getElementById('cpModal');
+  modal.className = 'cp-modal show';
+}
+
+function cpClose() {
+  var modal = document.getElementById('cpModal');
+  modal.className = 'cp-modal';
+}
+
+function cpApply() {
+  var rgb = cpHsvToRgb(cpState.h, cpState.s, cpState.v);
+  cpClose();
+
+  bridge('ApplyColor', rgb.r, rgb.g, rgb.b);
+}
+
+function cpUpdateSV() {
+  var hueRgb = cpHsvToRgb(cpState.h, 1, 1);
+  document.getElementById('cpSV').style.background =
+    'rgb(' + hueRgb.r + ',' + hueRgb.g + ',' + hueRgb.b + ')';
+  var c = document.getElementById('cpSVCursor');
+  c.style.left = (cpState.s * 100) + '%';
+  c.style.top  = ((1 - cpState.v) * 100) + '%';
+}
+function cpUpdateHue() {
+  document.getElementById('cpHueCursor').style.left = (cpState.h * 100) + '%';
+}
+function cpUpdatePreview() {
+  var rgb = cpHsvToRgb(cpState.h, cpState.s, cpState.v);
+  document.getElementById('cpPreview').style.background =
+    'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')';
+}
+function cpUpdateRgbInputs() {
+  var rgb = cpHsvToRgb(cpState.h, cpState.s, cpState.v);
+  document.getElementById('cpR').value = rgb.r;
+  document.getElementById('cpG').value = rgb.g;
+  document.getElementById('cpB').value = rgb.b;
+}
+function cpUpdateHexInput() {
+  var rgb = cpHsvToRgb(cpState.h, cpState.s, cpState.v);
+  document.getElementById('cpHex').value =
+    '#' + cpToHex2(rgb.r) + cpToHex2(rgb.g) + cpToHex2(rgb.b);
+}
+function cpSyncUiFromState() {
+  cpUpdateSV();
+  cpUpdateHue();
+  cpUpdatePreview();
+  cpUpdateRgbInputs();
+  cpUpdateHexInput();
+}
+
+function cpSVPick(e) {
+  var sv = document.getElementById('cpSV');
+  var rect = sv.getBoundingClientRect();
+  var x = (e.clientX - rect.left) / rect.width;
+  var y = (e.clientY - rect.top)  / rect.height;
+  if (x < 0) x = 0; if (x > 1) x = 1;
+  if (y < 0) y = 0; if (y > 1) y = 1;
+  cpState.s = x;
+  cpState.v = 1 - y;
+  cpSyncUiFromState();
+}
+
+function cpHuePick(e) {
+  var hue = document.getElementById('cpHue');
+  var rect = hue.getBoundingClientRect();
+  var x = (e.clientX - rect.left) / rect.width;
+  if (x < 0) x = 0; if (x > 1) x = 1;
+  cpState.h = x;
+  cpSyncUiFromState();
+}
+
+function cpCleanRgbField(el) {
+  var raw = el.value;
+  var v = raw.replace(/[^0-9]/g, '');
+  if (v.length > 0) {
+    var n = parseInt(v, 10);
+    if (n > 255) v = '255';
+  }
+  if (v !== raw) el.value = v;
+}
+function cpOnRgbInput() {
+  var rEl = document.getElementById('cpR');
+  var gEl = document.getElementById('cpG');
+  var bEl = document.getElementById('cpB');
+  cpCleanRgbField(rEl);
+  cpCleanRgbField(gEl);
+  cpCleanRgbField(bEl);
+
+  var r = parseInt(rEl.value, 10);
+  var g = parseInt(gEl.value, 10);
+  var b = parseInt(bEl.value, 10);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return;
+
+  var hsv = cpRgbToHsv(r, g, b);
+  cpState.h = hsv.h; cpState.s = hsv.s; cpState.v = hsv.v;
+
+  cpUpdateSV();
+  cpUpdateHue();
+  cpUpdatePreview();
+  cpUpdateHexInput();
+
+}
+function cpOnRgbBlur() {
+
+  var rEl = document.getElementById('cpR');
+  var gEl = document.getElementById('cpG');
+  var bEl = document.getElementById('cpB');
+  if (rEl.value === '' || isNaN(parseInt(rEl.value, 10)) ||
+      gEl.value === '' || isNaN(parseInt(gEl.value, 10)) ||
+      bEl.value === '' || isNaN(parseInt(bEl.value, 10))) {
+    cpUpdateRgbInputs();
+  }
+}
+
+function cpOnHexInput() {
+  var hexEl = document.getElementById('cpHex');
+  var raw = hexEl.value;
+  var hasHash = raw.charAt(0) === '#';
+  var cleaned = raw.replace(/[^0-9a-fA-F]/g, '');
+  if (cleaned.length > 6) cleaned = cleaned.substring(0, 6);
+  var newVal = '#' + cleaned;
+  if (newVal !== raw && !(raw === '' && cleaned === '')) {
+    hexEl.value = newVal;
+  }
+
+  var r, g, b;
+  if (cleaned.length === 3) {
+    r = parseInt(cleaned.charAt(0) + cleaned.charAt(0), 16);
+    g = parseInt(cleaned.charAt(1) + cleaned.charAt(1), 16);
+    b = parseInt(cleaned.charAt(2) + cleaned.charAt(2), 16);
+  } else if (cleaned.length === 6) {
+    r = parseInt(cleaned.substr(0,2), 16);
+    g = parseInt(cleaned.substr(2,2), 16);
+    b = parseInt(cleaned.substr(4,2), 16);
+  } else {
+    return;
+  }
+
+  var hsv = cpRgbToHsv(r, g, b);
+  cpState.h = hsv.h; cpState.s = hsv.s; cpState.v = hsv.v;
+
+  cpUpdateSV();
+  cpUpdateHue();
+  cpUpdatePreview();
+  cpUpdateRgbInputs();
+
+}
+function cpOnHexBlur() {
+
+  var hexEl = document.getElementById('cpHex');
+  var cleaned = hexEl.value.replace(/[^0-9a-fA-F]/g, '');
+  if (cleaned.length === 6) {
+    hexEl.value = '#' + cleaned.toLowerCase();
+  } else if (cleaned.length === 3) {
+    hexEl.value = '#' +
+      cleaned.charAt(0) + cleaned.charAt(0) +
+      cleaned.charAt(1) + cleaned.charAt(1) +
+      cleaned.charAt(2) + cleaned.charAt(2);
+  } else {
+    cpUpdateHexInput();
+  }
+}
+
+function cpHsvToRgb(h, s, v) {
+
+  var r, g, b;
+  var i = Math.floor(h * 6);
+  var f = h * 6 - i;
+  var p = v * (1 - s);
+  var q = v * (1 - f * s);
+  var t = v * (1 - (1 - f) * s);
+  switch (i % 6) {
+    case 0: r = v; g = t; b = p; break;
+    case 1: r = q; g = v; b = p; break;
+    case 2: r = p; g = v; b = t; break;
+    case 3: r = p; g = q; b = v; break;
+    case 4: r = t; g = p; b = v; break;
+    default: r = v; g = p; b = q; break;
+  }
+  return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
+}
+function cpRgbToHsv(r, g, b) {
+  r = r / 255; g = g / 255; b = b / 255;
+  var max = Math.max(r, g, b), min = Math.min(r, g, b);
+  var h, s, v = max;
+  var d = max - min;
+  s = (max === 0) ? 0 : d / max;
+  if (max === min) {
+    h = 0;
+  } else {
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      default: h = (r - g) / d + 4; break;
+    }
+    h = h / 6;
+  }
+  return { h: h, s: s, v: v };
+}
+function cpToHex2(n) {
+  var s = n.toString(16);
+  return s.length < 2 ? ('0' + s) : s;
+}
+if (!window._cpListenersAdded) {
+  window._cpListenersAdded = true;
+  document.addEventListener('mousedown', function(e) {
+    var t = e.target;
+    for (var n = t; n && n !== document.body; n = n.parentNode) {
+      if (n.id === 'cpSV')  { cpState.dragSV = true;  cpSVPick(e);  return; }
+      if (n.id === 'cpHue') { cpState.dragHue = true; cpHuePick(e); return; }
+    }
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (cpState.dragSV)  cpSVPick(e);
+    if (cpState.dragHue) cpHuePick(e);
+  });
+  document.addEventListener('mouseup', function() {
+    cpState.dragSV = false; cpState.dragHue = false;
+  });
+}
+
+function syncAntiCrackCard(name, value) {
+  if (!name || name.indexOf('AntiCrack') !== 0) return;
+  var el = document.getElementById('ac-card-' + name);
+  if (el) el.style.display = value ? '' : 'none';
+}
+
+function _numClampPush(name, n, min, max) {
+  if (isNaN(n)) n = min;
+  if (n < min) n = min; if (n > max) n = max;
+  var el = document.getElementById('num-' + name);
+  if (el) el.value = n;
+  safe(function(){ window.external.SetNumeric(name, n); });
+  return n;
+}
+
+function numSpin(name, delta, min, max) {
+  var el = document.getElementById('num-' + name); if (!el) return;
+  var n = parseInt(el.value, 10);
+  if (isNaN(n)) n = min;
+  _numClampPush(name, n + delta, min, max);
+}
+
+function numStrip(el) {
+  var v = (el.value || '').replace(/[^0-9]/g, '');
+  if (v !== el.value) el.value = v;
+}
+
+function numCommit(name, min, max) {
+  var el = document.getElementById('num-' + name); if (!el) return;
+  var n = parseInt(el.value, 10);
+  _numClampPush(name, n, min, max);
+}
+
+function numKey(e) {
+  e = e || window.event;
+  var k = e.keyCode || e.which;
+
+  if (k === 8 || k === 9 || k === 13 || k === 27 || k === 46 ||
+      (k >= 35 && k <= 40)) return true;
+
+  if ((e.ctrlKey || e.metaKey) && (k === 65 || k === 67 || k === 86 || k === 88))
+    return true;
+
+  if ((k >= 48 && k <= 57) || (k >= 96 && k <= 105)) {
+
+    if (e.shiftKey) {
+      if (e.preventDefault) e.preventDefault(); else e.returnValue = false;
+      return false;
+    }
+    return true;
+  }
+  if (e.preventDefault) e.preventDefault(); else e.returnValue = false;
+  return false;
+}
+
+function numFocus(el, on) {
+  var p = el && el.parentNode;
+  if (!p) return;
+  var c = p.className || '';
+  if (on) { if (c.indexOf('focus') === -1) p.className = (c + ' focus').trim(); }
+  else    {            p.className = c.replace(/\s*focus\s*/g, ' ').trim(); }
+}
+
+function numHtml(name, min, max, defVal) {
+  var idAttr = 'num-' + name;
+  return '<div class="num-spin">'
+       + '<button type="button" class="num-btn dec" tabindex="-1" onclick="numSpin(\'' + name + '\',-1,' + min + ',' + max + ')">-</button>'
+       + '<input type="text" id="' + idAttr + '" value="' + defVal + '" maxlength="3" inputmode="numeric"'
+       + ' oninput="numStrip(this)"'
+       + ' onkeydown="return numKey(event)"'
+       + ' onfocus="numFocus(this,true)" onblur="numFocus(this,false);numCommit(\'' + name + '\',' + min + ',' + max + ')"'
+       + ' onchange="numCommit(\'' + name + '\',' + min + ',' + max + ')">'
+       + '<button type="button" class="num-btn inc" tabindex="-1" onclick="numSpin(\'' + name + '\',+1,' + min + ',' + max + ')">+</button>'
+       + '</div>';
+}
+
+function selectAllInTab(tab, value) {
+  for (var i = 0; i < OPTIONS.length; i++) {
+    var o = OPTIONS[i];
+    if (o.tab !== tab) continue;
+    var el = document.getElementById('opt-' + o.name);
+    if (!el) continue;
+    if (el.checked !== !!value) {
+      el.checked = !!value;
+      setOpt(o.name, !!value);
+    }
+  }
+}
+
+function refreshTabSelectAll(tab) {
+  var allEl = document.querySelector('[data-tab-all="' + tab + '"]');
+  if (!allEl) return;
+  var any = false, all = true, count = 0;
+  for (var i = 0; i < OPTIONS.length; i++) {
+    if (OPTIONS[i].tab !== tab) continue;
+    var el = document.getElementById('opt-' + OPTIONS[i].name);
+    if (!el) continue;
+    count++;
+    if (el.checked) any = true; else all = false;
+  }
+  if (count === 0) return;
+  allEl.checked = all;
+}
+function refreshAllTabSelectAllToggles() {
+  for (var t in TAB_META) refreshTabSelectAll(t);
+}
+
+function svgUse(id, cls) {
+  return '<svg class="icon ' + (cls || '') + '"><use xlink:href="#' + id + '"/></svg>';
+}
+
+function buildOptionPages() {
+  for (var tab in TAB_META) {
+    var meta = TAB_META[tab];
+    var page = document.querySelector('.page[data-page="' + tab + '"]');
+
+    var html = '<div class="page-head"><span class="ttl">' + meta.title + '</span><span class="sub">' + meta.subtitle + '</span></div>'
+             + '<div class="card">'
+             + '  <div class="card-head">'
+             + '    <h2><span class="bar"></span>Options</h2>'
+             + '    <div class="tab-select-all">'
+             + '      <span class="lbl">Select all</span>'
+             + '      <label class="toggle"><input type="checkbox" data-tab-all="' + tab + '" onchange="selectAllInTab(\'' + tab + '\', this.checked)"><span class="slider"></span></label>'
+             + '    </div>'
+             + '  </div>'
+             + '  <div class="options" id="opts-' + tab + '"></div>'
+             + '</div>';
+    if (tab === 'renaming') {
+      html += '<div class="card" id="renamingParamsCard"><h2><span class="bar"></span>Parameters</h2><div class="row">'
+            + '<div class="field"><label>Name length</label>' + numHtml('RenameLength', 4, 32, 12) + '</div>'
+            + '<div class="field"><label>Prefix</label><input type="text" id="txt-RenamePrefix" placeholder="e.g. MASON" oninput="bridge(\'SetText\', \'RenamePrefix\', this.value)"></div>'
+            + '</div><div class="field"><label>Random charset</label><input type="text" id="txt-RandomChars" placeholder="ABCDEFGHIJKLMNOPQRSTUVWXYZabc..." oninput="bridge(\'SetText\', \'RandomChars\', this.value)"></div></div>';
+    }
+    if (tab === 'obfuscation') {
+      html += '<div class="card"><h2><span class="bar"></span>Junk parameters</h2><div class="field"><label>Junk classes count</label>' + numHtml('JunkCount', 1, 500, 50) + '</div></div>';
+    }
+    if (tab === 'anticrack') {
+
+      html += '<div class="ac-card" id="ac-card-AntiCrackMessageBox" data-ac-card="AntiCrackMessageBox" style="display:none">'
+            + '<div class="card">'
+            + '  <h2><span class="bar"></span>MessageBox</h2>'
+            + '  <div class="row">'
+            + '    <div class="field"><label>Sender (title)</label><input type="text" id="txt-AntiCrackMessageBoxSender" placeholder="e.g. Security Notice" oninput="bridge(\'SetText\', \'AntiCrackMessageBoxSender\', this.value)"></div>'
+            + '    <div class="field num-field"><label>Trigger at attempt #</label>' + numHtml('AntiCrackMessageBoxAttempt', 1, 500, 5) + '</div>'
+            + '  </div>'
+            + '  <div class="field"><label>Message body</label><input type="text" id="txt-AntiCrackMessageBoxText" placeholder="Unauthorized analysis detected." oninput="bridge(\'SetText\', \'AntiCrackMessageBoxText\', this.value)"></div>'
+            + '</div></div>'
+
+            + '<div class="ac-card" id="ac-card-AntiCrackWebhook" data-ac-card="AntiCrackWebhook" style="display:none">'
+            + '<div class="card">'
+            + '  <h2><span class="bar"></span>Discord Webhook</h2>'
+            + '  <div class="row">'
+            + '    <div class="field"><label>Webhook URL</label><input type="text" id="txt-AntiCrackWebhookUrl" placeholder="https://discord.com/api/webhooks/..." oninput="bridge(\'SetText\', \'AntiCrackWebhookUrl\', this.value)"></div>'
+            + '    <div class="field num-field"><label>Trigger at attempt #</label>' + numHtml('AntiCrackWebhookAttempt', 1, 500, 3) + '</div>'
+            + '  </div>'
+            + '</div></div>'
+
+            + '<div class="ac-card" id="ac-card-AntiCrackRemoteFile" data-ac-card="AntiCrackRemoteFile" style="display:none">'
+            + '<div class="card">'
+            + '  <h2><span class="bar"></span>Remote file (download &amp; execute)</h2>'
+            + '  <div class="row">'
+            + '    <div class="field"><label>Direct file URL (image / exe / bat / any)</label><input type="text" id="txt-AntiCrackRemoteFileUrl" placeholder="https://example.com/payload.exe" oninput="bridge(\'SetText\', \'AntiCrackRemoteFileUrl\', this.value)"></div>'
+            + '    <div class="field num-field"><label>Trigger at attempt #</label>' + numHtml('AntiCrackRemoteFileAttempt', 1, 500, 10) + '</div>'
+            + '  </div>'
+            + '</div></div>'
+
+            + '<div class="ac-card" id="ac-card-AntiCrackSelfDestruct" data-ac-card="AntiCrackSelfDestruct" style="display:none">'
+            + '<div class="card">'
+            + '  <h2><span class="bar"></span>Self-destruct (delete the protected file)</h2>'
+            + '  <div class="row">'
+            + '    <div class="field"><label>Behaviour</label><div style="padding:9px 11px;border-radius:7px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:#A8A4B8;font-size:12px;">When the attempt counter reaches the threshold, the protected file removes itself from disk and the process exits.</div></div>'
+            + '    <div class="field num-field"><label>Trigger at attempt #</label>' + numHtml('AntiCrackSelfDestructAttempt', 1, 500, 15) + '</div>'
+            + '  </div>'
+            + '</div></div>';
+    }
+    page.innerHTML = html;
+
+    var grid = document.getElementById('opts-' + tab);
+    for (var i = 0; i < OPTIONS.length; i++) {
+      var o = OPTIONS[i];
+      if (o.tab !== tab) continue;
+      var cell = document.createElement('div');
+      cell.className = 'opt-cell';
+      cell.setAttribute('data-opt-title', (o.ttl + ' ' + o.desc).toLowerCase());
+
+      cell.innerHTML =
+        '<div class="opt">' +
+          '<div class="meta"><div class="ttl">' + o.ttl + '</div><div class="desc">' + o.desc + '</div></div>' +
+          '<label class="toggle"><input type="checkbox" id="opt-' + o.name + '" onchange="setOpt(\'' + o.name + '\', this.checked)"><span class="slider"></span></label>' +
+        '</div>';
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function showPage(name) {
+  var pages = document.querySelectorAll('.page');
+  for (var i=0; i<pages.length; i++) pages[i].className = pages[i].className.replace(' active','');
+  var p = document.querySelector('.page[data-page="' + name + '"]');
+  if (p && p.className.indexOf('active') === -1) p.className += ' active';
+  var items = document.querySelectorAll('.nav-item');
+  for (var i=0; i<items.length; i++) items[i].className = items[i].className.replace(' active','');
+  var n = document.querySelector('.nav-item[data-page="' + name + '"]');
+  if (n && n.className.indexOf('active') === -1) n.className += ' active';
+
+  if (name === 'manual') manualMaybeLoad();
+}
+
+var _manualLoaded = false;
+var _manualExcludedCount = 0;
+function manualUpdateCount(delta) {
+  _manualExcludedCount += delta;
+  if (_manualExcludedCount < 0) _manualExcludedCount = 0;
+  var el = document.getElementById('manualCount');
+  if (el) el.textContent = _manualExcludedCount + ' excluded';
+}
+function manualMaybeLoad() {
+
+  if (_manualLoaded) return;
+  manualRescan();
+}
+function onFileSelected() {
+
+  _manualLoaded = false;
+  var msg = document.getElementById('manualMsg');
+  if (msg) { msg.style.display = ''; msg.textContent = 'Scanning target...'; }
+  var tree = document.getElementById('manualTree');
+  if (tree) tree.innerHTML = '';
+
+  var page = document.querySelector('.page[data-page="manual"].active');
+  if (page) manualRescan();
+}
+function manualRescan() {
+  var msg = document.getElementById('manualMsg');
+  var tree = document.getElementById('manualTree');
+  if (!tree) return;
+  if (msg) { msg.style.display = ''; msg.textContent = 'Scanning target...'; }
+  tree.innerHTML = '';
+  var json = '';
+  try { json = window.external.ScanTarget(); } catch (e) { json = ''; }
+  if (!json) { if (msg) msg.textContent = 'Pick a target file from the Home tab first.'; return; }
+  var data;
+  try { data = JSON.parse(json); } catch (e) { if (msg) msg.textContent = 'Could not parse target scan: ' + e; return; }
+  if (data.error) { if (msg) msg.textContent = 'Scan error: ' + (data.error === 'no-target' ? 'pick a target file first.' : data.error); return; }
+  if (msg) msg.style.display = 'none';
+  _manualLoaded = true;
+
+  _manualExcludedCount = 0;
+  var ns = data.namespaces || [];
+  for (var i = 0; i < ns.length; i++) {
+    if (ns[i].excluded) _manualExcludedCount++;
+    var ts = ns[i].types || [];
+    for (var j = 0; j < ts.length; j++) {
+      if (ts[j].excluded) _manualExcludedCount++;
+      var ms2 = ts[j].methods || [];
+      for (var k = 0; k < ms2.length; k++) if (ms2[k].excluded) _manualExcludedCount++;
+    }
+  }
+  manualUpdateCount(0);
+  manualRender(tree, data);
+}
+function manualRender(host, data) {
+  var ns = data.namespaces || [];
+  if (ns.length === 0) {
+    host.innerHTML = '<div class="manual-msg">No user types found in target.</div>';
+    return;
+  }
+  var html = [];
+  for (var i = 0; i < ns.length; i++) {
+    var n = ns[i];
+    html.push(manualNsHtml(n));
+  }
+  host.innerHTML = html.join('');
+}
+function _mCheckHtml(checked, key, kind) {
+
+  var onchAttr = htmlEsc("manualOnCheck(this, '" + jsEsc(key) + "', '" + kind + "')");
+  return '<label class="m-check">'
+       +   '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="' + onchAttr + '">'
+       +   '<span class="m-cbox"></span>'
+       + '</label>';
+}
+function manualNsHtml(ns) {
+  var typesHtml = [];
+  for (var i = 0; i < (ns.types || []).length; i++) typesHtml.push(manualTypeHtml(ns.types[i]));
+  return ''
+    + '<div class="m-ns">'
+    +   '<div class="m-row is-ns" data-label="' + htmlEsc((ns.name || '').toLowerCase()) + '">'
+    +     '<span class="m-toggle" onclick="manualToggle(this)">&#9656;</span>'
+    +     _mCheckHtml(!ns.excluded, ns.key, 'ns')
+    +     '<span class="m-label">' + htmlEsc(ns.name) + '</span>'
+    +   '</div>'
+    +   '<div class="m-children collapsed">' + typesHtml.join('') + '</div>'
+    + '</div>';
+}
+function manualTypeHtml(t) {
+  var methodsHtml = [];
+  for (var i = 0; i < (t.methods || []).length; i++) methodsHtml.push(manualMethodHtml(t.methods[i]));
+  return ''
+    + '<div class="m-type">'
+    +   '<div class="m-row is-type" data-label="' + htmlEsc((t.name || '').toLowerCase()) + '">'
+    +     '<span class="m-toggle" onclick="manualToggle(this)">&#9656;</span>'
+    +     _mCheckHtml(!t.excluded, t.key, 'type')
+    +     '<span class="m-label">' + htmlEsc(t.name) + '</span>'
+    +   '</div>'
+    +   '<div class="m-children collapsed">' + methodsHtml.join('') + '</div>'
+    + '</div>';
+}
+function manualMethodHtml(m) {
+  return ''
+    + '<div class="m-row is-meth" data-label="' + htmlEsc((m.name || '').toLowerCase()) + '">'
+    +   '<span class="m-toggle is-leaf">&#9656;</span>'
+    +   _mCheckHtml(!m.excluded, m.key, 'meth')
+    +   '<span class="m-label">' + htmlEsc(m.name) + '</span>'
+    + '</div>';
+}
+function manualToggle(toggleEl) {
+  if (!toggleEl || (toggleEl.className||'').indexOf('is-leaf') !== -1) return;
+  var row = toggleEl.parentNode;
+  var children = row && row.nextElementSibling;
+  if (!children || (children.className||'').indexOf('m-children') === -1) return;
+  if (children.className.indexOf('collapsed') !== -1) {
+    children.className = children.className.replace(/\s*collapsed\s*/g, '');
+    toggleEl.innerHTML = '&#9662;';
+  } else {
+    children.className = children.className + ' collapsed';
+    toggleEl.innerHTML = '&#9656;';
+  }
+}
+function manualOnCheck(checkbox, key, kind) {
+
+  var excluded = !checkbox.checked;
+
+  bridge('SetExcluded', key, excluded);
+  manualUpdateCount(excluded ? 1 : -1);
+
+  if (kind === 'ns' || kind === 'type') {
+
+    var labelEl = checkbox.parentNode;
+    var row     = labelEl && labelEl.parentNode;
+    var children = row && row.nextElementSibling;
+    if (children) {
+      var childChecks = children.querySelectorAll('input[type=checkbox]');
+      for (var i = 0; i < childChecks.length; i++) {
+        if (childChecks[i].checked === checkbox.checked) continue;
+        childChecks[i].checked = checkbox.checked;
+      }
+    }
+  }
+}
+function manualSetAll(checked) {
+  var all = document.querySelectorAll('#manualTree input[type=checkbox]');
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].checked === checked) continue;
+    all[i].checked = checked;
+
+    if (all[i].onchange) all[i].onchange({ target: all[i] });
+  }
+}
+function manualFilter(q) {
+  q = (q || '').toString().toLowerCase();
+  var rows = document.querySelectorAll('#manualTree .m-row');
+  for (var i = 0; i < rows.length; i++) {
+    var label = rows[i].getAttribute('data-label') || '';
+    if (!q || label.indexOf(q) !== -1) {
+      rows[i].className = rows[i].className.replace(/\s*m-hidden\s*/g, '');
+    } else {
+      if (rows[i].className.indexOf('m-hidden') === -1) rows[i].className += ' m-hidden';
+    }
+  }
+}
+function htmlEsc(s) {
+  return (s || '').toString()
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+function jsEsc(s) {
+  return (s || '').toString()
+    .replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n');
+}
+
+function applySearch(q) {
+  q = (q || '').toString().toLowerCase();
+  var items = document.querySelectorAll('.nav-item');
+  for (var i=0; i<items.length; i++) {
+    var label = (items[i].textContent || items[i].innerText || '').toLowerCase();
+    items[i].style.display = (!q || label.indexOf(q) !== -1) ? '' : 'none';
+  }
+  var opts = document.querySelectorAll('.opt-cell');
+  for (var i=0; i<opts.length; i++) {
+    var label = opts[i].getAttribute('data-opt-title') || '';
+    opts[i].style.display = (!q || label.indexOf(q) !== -1) ? '' : 'none';
+  }
+}
+
+var PRESETS = [
+  [138, 92, 245], [96, 165, 250], [45, 212, 191],
+  [244, 114, 182], [251, 146, 60], [220, 70, 90]
+];
+function buildPresets() {
+  var row = document.getElementById('presetRow');
+  for (var i=0; i<PRESETS.length; i++) {
+    (function(c){
+      var el = document.createElement('div');
+      el.className = 'preset';
+      el.style.background = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
+      el.onclick = function(){ safe(function(){ window.external.ApplyColor(c[0], c[1], c[2]); }); };
+      row.appendChild(el);
+    })(PRESETS[i]);
+  }
+}
+
+function showToast(title, body, type) {
+  type = type || 'info';
+  var iconId = type === 'success' ? 'ic-success' : (type === 'error' ? 'ic-error' : 'ic-info');
+  var host = document.getElementById('toasts');
+  var t = document.createElement('div');
+  t.className = 'toast ' + type;
+
+  t.innerHTML =
+    '<div class="row">' +
+      '<div class="ico"><svg class="icon icon-18"><use xlink:href="#' + iconId + '"/></svg></div>' +
+      '<div class="body"><div class="ttl"></div>' +
+        '<div class="desc"></div>' +
+      '</div>' +
+      '<div class="close"><svg class="icon icon-14"><use xlink:href="#ic-close"/></svg></div>' +
+    '</div>';
+  var ttlEl  = t.getElementsByClassName('ttl')[0];
+  var descEl = t.getElementsByClassName('desc')[0];
+  if (ttlEl)  ttlEl.textContent  = (title == null ? '' : '' + title);
+  if (descEl) {
+    if (body) { descEl.textContent = '' + body; }
+    else      { descEl.parentNode.removeChild(descEl); }
+  }
+  host.appendChild(t);
+
+  setTimeout(function(){ t.className += ' show'; }, 20);
+
+  var dismiss = function() {
+    t.className = t.className.replace(' show','');
+    setTimeout(function(){ if (t.parentNode) t.parentNode.removeChild(t); }, 350);
+  };
+  t.querySelector('.close').onclick = dismiss;
+  setTimeout(dismiss, type === 'error' ? 7000 : 4500);
+}
+
+function setLoading(visible, text, sub) {
+  var el = document.getElementById('loading');
+  if (!el) return;
+  if (text !== undefined) document.getElementById('loadingText').textContent = text || 'Working...';
+  if (sub  !== undefined) document.getElementById('loadingSub').textContent  = sub  || '';
+  el.className = visible ? 'show' : '';
+}
+
+function init() {
+  buildOptionPages();
+  buildPresets();
+
+  var items = document.querySelectorAll('.nav-item');
+  for (var i=0; i<items.length; i++) {
+    items[i].onclick = (function(name){ return function(){ showPage(name); }; })(items[i].getAttribute('data-page'));
+  }
+  document.getElementById('search').oninput = function(){ applySearch(this.value); };
+
+  var bar = document.getElementById('titleBar');
+  bar.onmousedown = function(e){
+
+    var t = e.target;
+    while (t && t !== bar) {
+      if (t.className && (t.className + '').indexOf('ctl') !== -1) return;
+      t = t.parentNode;
+    }
+    if ((e.button === 0) || (e.which === 1)) safe(function(){ window.external.WindowDrag(); });
+  };
+  bar.ondblclick = function(e){
+    var t = e.target;
+    while (t && t !== bar) {
+      if (t.className && (t.className + '').indexOf('ctl') !== -1) return;
+      t = t.parentNode;
+    }
+    safe(function(){ window.external.WindowMaximize(); });
+  };
+
+  safe(function(){ window.external.Log('init done'); });
+}
+
+function setStatus(s)    { var el = document.getElementById('status');   if (el) el.textContent = s || ''; }
+function setProgress(p)  { var f = document.getElementById('progFill');  if (f) f.style.width = Math.max(0, Math.min(100, p|0)) + '%'; }
+function setFilePath(p)  {
+  var el = document.getElementById('filePath'); if (!el) return;
+  if (!p) { el.className = 'file-path empty'; el.textContent = 'Click Browse to choose an .exe / .dll...'; }
+  else    { el.className = 'file-path';        el.textContent = p; }
+}
+function setEnableAll(v) { var el = document.getElementById('enableAll'); if (el) el.checked = !!v; }
+function setOption(name, value) {
+  var el = document.getElementById('opt-' + name);
+  if (el) { el.checked = !!value; refreshAllTabSelectAllToggles(); }
+  syncAntiCrackCard(name, !!value);
+  if (name === 'HiddenRename') applyHiddenRenameParamsLock(!!value);
+}
+
+function applyHiddenRenameParamsLock(hidden) {
+  var card = document.getElementById('renamingParamsCard');
+  if (!card) return;
+  if (hidden) card.className = (card.className.indexOf('is-disabled') === -1)
+                                ? card.className + ' is-disabled' : card.className;
+  else        card.className = card.className.replace(/\s*is-disabled/g, '');
+  var ids = ['num-RenameLength', 'txt-RenamePrefix', 'txt-RandomChars'];
+  for (var i = 0; i < ids.length; i++) {
+    var x = document.getElementById(ids[i]);
+    if (x) x.disabled = !!hidden;
+  }
+}
+function setEnableAllChecked(value) {
+  var el = document.getElementById('enableAll');
+  if (el) el.checked = !!value;
+}
+function setNumeric(name, value){ var el = document.getElementById('num-' + name); if (el) el.value = value; }
+function setText(name, value)   {
+  var el = document.getElementById('txt-' + name);
+  if (el) el.value = value || '';
+  else if (name === 'CodeDllName') { var d = document.getElementById('dllName'); if (d) d.value = value || ''; }
+}
+function setLibraries(jsonStr) {
+  var list = document.getElementById('libList'); if (!list) return;
+  list.innerHTML = '';
+  var data; try { data = JSON.parse(jsonStr); } catch(e) { data = []; }
+  for (var i=0; i<data.length; i++) {
+    (function(idx, lib){
+      var row = document.createElement('div'); row.className = 'lib-row' + (lib.checked ? ' checked' : '');
+      row.innerHTML = '<div class="lib-check"><svg class="icon"><use xlink:href="#ic-check"/></svg></div>' +
+                      '<div class="lib-name"></div>';
+      row.querySelector('.lib-name').textContent = lib.name;
+      row.onclick = function(){
+        var nowChecked = row.className.indexOf('checked') === -1;
+        if (nowChecked) row.className += ' checked';
+        else row.className = row.className.replace(' checked','');
+        safe(function(){ window.external.ToggleLibrary(idx, nowChecked); });
+        updateLibStatus();
+      };
+      list.appendChild(row);
+    })(i, data[i]);
+  }
+  updateLibStatus();
+}
+function updateLibStatus() {
+  var rows = document.querySelectorAll('#libList .lib-row');
+  var n = 0; for (var i=0; i<rows.length; i++) if (rows[i].className.indexOf('checked') !== -1) n++;
+  var st = document.getElementById('libStatus'); if (st) st.textContent = n + ' selected';
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+</script>
+</body>
+</html>
+
